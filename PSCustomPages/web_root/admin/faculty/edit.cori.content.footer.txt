@@ -1,0 +1,32 @@
+<!-- Adds CORI date field to staff/faculty edit screen.
+-->
+
+<script type="text/javascript" language="JavaScript">
+
+    /* statusColumn is the closest ID to get to the end of the table section.
+       Another possibility would be to put before the second headerRow.
+       Need to put in div so an use an ID, but only insert the "tr" or the 
+	   formatting doesn't work.
+    */
+    $j(document).ready(function() {
+        $j('#statusColumn').parent().parent().after( $j('#coriField').find("tr") );
+    });
+
+</script>
+
+<!-- This can be below the script as long as use document.ready so loaded after
+    the rest of the document is loaded (and therefore coriField exists).
+    I don't know why 'evenoddrow' doesn't work and have to use 'evenrow' instead.
+-->
+<div id="coriField" class="hide">
+    <table>
+		<tr class="~[evenrow]">
+			<td class="bold">CORI</td>
+			<td>
+				<input type="text" class="psDateWidget" 
+				 name="[Users.U_USERS_EXTENSION]CORI_DATE" 
+				 value="" size="10" maxlength="10">
+			</td>       
+		</tr>
+    </table>
+</div>
