@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<psExtension xmlns="http://www.powerschool.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.powerschool.com psextension.xsd">
+    <extensionname>U_Users_Extension</extensionname>
+    <extendedTable coreTable="Users" dbTableName="U_DEF_EXT_USERS" comment="">
+        <field name="CORI_Date" type="Date" remaps="CORI_Date" comment="Date of last CORI" alternateKey="users_dcid" alternateCoreTable="Teachers"/>
+    </extendedTable>
+</psExtension>
