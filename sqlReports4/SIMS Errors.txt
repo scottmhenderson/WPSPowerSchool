@@ -1,0 +1,78 @@
+<ReportName>SIMS Errors</ReportName>
+<ReportTitle>Sort by columns to get errors to the top</ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>State Reporting</ReportGroup>
+<ReportDescription>Look for common things that can be wrong in student records that can cause a student to not be sent to the state, or other discrepancies between our list and the state's list</ReportDescription>
+<SQLQuery><textarea name="UF-0060051653">select 
+  s.student_number, 
+  s.lastfirst,
+  -- Find students with missing ethnicity race info
+  -- NOTE cannot use column filtering if have calculated fields
+  case when ps_customfields.getcf('students',id,'ma_ercode') is null then 'ERR' else ps_customfields.getcf('students',id,'ma_ercode') end EthRace,
+  -- Find records where Exit is earlier than Entry
+  -- If can eliminate these then can have Entry equal Exit in queries
+  -- to exclude students who enrolled but never got here
+  case when exitdate&lt;entrydate then 'ERR' else '' end ExitLtEntry,
+  to_char(entrydate,'MM/DD/YY') EntryDate, 
+  to_char(exitdate,'MM/DD/YY') ExitDate
+FROM students s
+WHERE
+  s.state_excludefromreporting &lt;&gt; 1
+  AND s.entrydate &lt;&gt; s.exitdate
+  ORDER BY EthRace desc, ExitLtEntry desc
+;</textarea></SQLQuery>
+<ReportHeader><th>StuNo</th><th>Name</th><th>ERCode</th><th>ExitLtEntry</th><th>Entry</th><th>Exit</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton>1</HideCopyButton>
+<HideCSVButton>1</HideCSVButton>
+<HideTabButton>1</HideTabButton>
+<HidePDFButton>1</HidePDFButton>
+<ShowSearchBox>1</ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC>1</ShowSHC>
+<UseColRe>1</UseColRe>
+<UseFixHdr>1</UseFixHdr>
+<HidePrint>1</HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt></UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
