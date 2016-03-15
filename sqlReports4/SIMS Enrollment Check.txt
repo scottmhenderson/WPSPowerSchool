@@ -25,34 +25,30 @@ FROM (
   WHERE 
   -- Kids still here. Got here before and exit after reporting date.
   (
-    s.entrydate &lt; to_date('%param1%','DD-MON-YY')
-    and s.exitdate &gt;= to_date('%param1%','DD-MON-YY')
+    s.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+    and s.exitdate &gt; to_date('%param1%','DD-MON-YY')
     and s.state_excludefromreporting &lt;&gt; 1
   )
   -- Kids who have left, but were here and reported on last year,
   -- so have to report on them this year too.
-  -- But exclude special case of those we thought we were going to have but
-  --   never showed. They have entry date == exit date.
 or (
-   s.entrydate &lt; to_date('%param1%','DD-MON-YY')
-   and s.exitdate &lt; to_date('%param1%','DD-MON-YY')
-   and s.exitdate &gt;= to_date('%param2%','DD-MON-YY')
-   and s.entrydate &lt;&gt; s.exitdate
+   s.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+   and s.exitdate &lt;= to_date('%param1%','DD-MON-YY')
+   and s.exitdate &gt; to_date('%param2%','DD-MON-YY')
    and s.state_excludefromreporting &lt;&gt; 1
    )
 -- Same as previous - left but were here and reported on last year,
 -- but found in reenrollments table.
 or (
-   re.entrydate &lt; to_date('%param1%','DD-MON-YY')
-   and re.exitdate &lt; to_date('%param1%','DD-MON-YY')
-   and re.exitdate &gt;= to_date('%param2%','DD-MON-YY')
-   and re.entrydate &lt;&gt; re.exitdate
+   re.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+   and re.exitdate &lt;= to_date('%param1%','DD-MON-YY')
+   and re.exitdate &gt; to_date('%param2%','DD-MON-YY')
    and s.state_excludefromreporting &lt;&gt; 1
     )
 -- Add the kids that were here earlier in the year, left, and came back after current period deadline
 or (s.entrydate &gt; to_date('%param1%','DD-MON-YY') 
     and re.entrydate is not null 
-    and re.entrydate &lt; to_date('%param1%','DD-MON-YY') 
+    and re.entrydate &lt;= to_date('%param1%','DD-MON-YY') 
     and re.exitdate is not null
     and re.exitdate &gt; to_date('%param2%','DD-MON-YY') 
     and re.exitcode &lt;&gt; 'TRF')
