@@ -1,0 +1,97 @@
+<ReportName>SIMS Errors - school code consistency</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>State Reporting</ReportGroup>
+<ReportDescription>Make sure the three school IDs match</ReportDescription>
+<SQLQuery><textarea name="UF-0060051651">SELECT 
+  student_number, 
+  state_studentnumber, 
+  lastfirst, schoolid, 
+  enrollment_schoolid, 
+  ps_customfields.getcf('students',id,'ma_schoolcode') ma_schoolcode
+FROM students
+WHERE
+  -- reporting student
+  ps_customfields.getcf('students',id,'ma_doerptflag') = 1
+
+  -- one of the school codes does not match another
+  AND (schoolid &lt;&gt; enrollment_schoolid
+    OR schoolid &lt;&gt; ps_customfields.getcf('students',id,'ma_schoolcode')
+    OR enrollment_schoolid &lt;&gt; ps_customfields.getcf('students',id,'ma_schoolcode')
+  )
+
+-- ma_schoolcode won't match if OOD
+  AND NOT (
+    schoolid = 3210000 
+    AND enrollment_schoolid=3210000 
+    AND ps_customfields.getcf('students',id,'ma_schoolcode') &lt;&gt; 3210000
+  )
+
+  -- ma_schoolcode won't match if Hastings 'walk-in'
+  AND NOT(
+    schoolid = 3210025 
+    AND enrollment_schoolid=3210025 
+    AND ps_customfields.getcf('students',id,'ma_schoolcode') = 2 
+  )
+
+  -- don't care if it's just enrollment_schoolid if transferred out
+  AND NOT (schoolid = ps_customfields.getcf('students',id,'ma_schoolcode') 
+    AND schoolid &lt;&gt; enrollment_schoolid
+    AND enroll_status=2
+  )
+ORDER BY schoolid, enrollment_schoolid, ps_customfields.getcf('students',id,'ma_schoolcode'), lastfirst;</textarea></SQLQuery>
+<ReportHeader><th>StuNo</th><th>SASID</th><th>Name</th><th>SchoolID</th><th>EnrollmentSchool</th><th>MASchool</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt></UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
