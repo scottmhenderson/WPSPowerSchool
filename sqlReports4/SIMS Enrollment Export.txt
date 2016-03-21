@@ -53,6 +53,7 @@ or (s.entrydate &gt; to_date('%param1%','DD-MON-YY')
     and re.exitdate is not null
     and re.exitdate &gt; to_date('%param2%','DD-MON-YY') 
     and re.exitcode &lt;&gt; 'TRF')
+order by s.schoolid, s.grade_level, s.lastfirst
 ;</textarea></SQLQuery>
 <ReportHeader><th>StuNo</th><th>LASID</th><th>SASID</th><th>Name</th><th>Grade</th><th>School</th><th>EnrollmentSch</th><th>MASch</th><th>EntryDate</th><th>EntryCode</th><th>ExitDate</th><th>ExitCode</th></ReportHeader>
 <CreateStudentSelection>0</CreateStudentSelection>
