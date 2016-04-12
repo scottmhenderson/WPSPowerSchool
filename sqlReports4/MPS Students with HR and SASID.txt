@@ -1,0 +1,66 @@
+<ReportName>MPS Students with HR and SASID</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>MPS</ReportGroup>
+<ReportDescription></ReportDescription>
+<SQLQuery><textarea name="UF-0060051641">Select s.DCID, s.Student_Number, s.state_studentnumber, s.Last_Name, s.First_Name, s.grade_level, sec.Room, t.last_name
+FROM Students s
+JOIN cc ON cc.StudentID = s.ID and cc.Course_Number like 'MPHR%'
+JOIN Sections sec on cc.SectionID = sec.ID
+Join teachers t on sec.teacher=t.id
+ORDER BY sec.Room, s.LastFirst</textarea></SQLQuery>
+<ReportHeader><th class="DCID">Student DCID</th><th>Student Num</th><th>SASID</th><th>Student Last</th><th>Student First</th><th>Grade</th><th>HR Num</th><th>Teacher</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB>1</CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox>1</ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt>1</UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>

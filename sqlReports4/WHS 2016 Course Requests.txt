@@ -1,0 +1,67 @@
+<ReportName>WHS 2016 Course Requests</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>WHS</ReportGroup>
+<ReportDescription></ReportDescription>
+<SQLQuery><textarea name="UF-0060051676">select sr.coursenumber, s.lastfirst, s.grade_level
+from schedulerequests sr
+join students s on sr.studentid=s.id
+and sr.yearid=2600
+and sr.schoolid=3210505
+and sr.globalalternatecourse=0
+order by sr.coursenumber, s.grade_level, s.lastfirst;</textarea></SQLQuery>
+<ReportHeader><th>CourseNumber</th><th>Student</th><th>Grade</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox>1</ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr>1</UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt>1</UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>

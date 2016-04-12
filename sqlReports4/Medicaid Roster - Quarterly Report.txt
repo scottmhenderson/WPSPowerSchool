@@ -1,0 +1,82 @@
+<ReportName>Medicaid Roster - Quarterly Report</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>State Reporting</ReportGroup>
+<ReportDescription></ReportDescription>
+<SQLQuery><textarea name="UF-0060051696">select state_studentnumber, last_name, first_name, 
+  to_char(s.dob,'MM/DD/YY') dob,
+  gender, 
+  ps_customfields.getcf('students',s.id,'ma_SpecEd35') DOE032,
+  ps_customfields.getcf('students',s.id,'ma_SpecEd621') DOE034,
+  ps_customfields.getcf('students',s.id,'ma_RptReason') DOE011,
+  ps_customfields.getcf('students',s.id,'ma_EnrollStatus') DOE012,
+  street, city, state, zip
+FROM Students s
+WHERE
+  s.enroll_status=0
+  AND
+  state_excludefromreporting &lt;&gt; 1
+  and
+  ps_customfields.getcf('students',s.id,'ma_RptReason')&lt;&gt;'03'
+  and
+  (  ps_customfields.getcf('students',s.id,'ma_EnrollStatus') = '01'
+     OR
+     ps_customfields.getcf('students',s.id,'ma_EnrollStatus') = '40'
+  )
+ORDER BY
+last_name, first_name</textarea></SQLQuery>
+<ReportHeader><th>SASID</th><th>Last Name</th><th>First Name</th><th>DOB</th><th>Gender</th><th>DOE032</th><th>DOE034</th><th>DOE011</th><th>DOE012</th><th>Street</th><th>City</th><th>Sate</th><th>Zip</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton>1</HidePDFButton>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfo>1</ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint>1</HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt></UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>

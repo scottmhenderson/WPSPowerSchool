@@ -1,0 +1,79 @@
+<ReportName>SPED Students</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup></ReportGroup>
+<ReportDescription></ReportDescription>
+<SQLQuery><textarea name="UF-0060051674">select s.student_number, s.state_studentnumber,
+s.last_name, s.first_name, s.middle_name,
+s.schoolid, sch.abbreviation sch,
+s.grade_level,
+ps_customfields.getcf('students',s.id,'ma_SpecEd35'),
+ps_customfields.getcf('students',s.id,'ma_SpecEd621'),
+ps_customfields.getcf('students',s.id,'ma_PrimDisabil'),
+ps_customfields.getcf('students',s.id,'ma_LevNeed'),
+ps_customfields.getcf('students',s.id,'ma_SpEdEvaluationRes')
+from students s
+join schools sch on s.schoolid=sch.school_number
+where s.state_excludefromreporting &lt;&gt; 1
+and s.enroll_status = 0
+and s.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+and 
+  (ps_customfields.getcf('students',s.id,'ma_SpecEd35')&gt;1
+   OR
+  ps_customfields.getcf('students',s.id,'ma_SpecEd621')&gt;1)
+;</textarea></SQLQuery>
+<ReportHeader><th>StuNum</th><th>SASID</th><th>Last</th><th>First</th><th>Middle</th><th>SchoolID</th><th>Sch</th><th>Grade</th><th>SpecEd35</th><th>SpecEd621</th><th>PrimDisabil</th><th>LevNeed</th><th>EvalRes</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox>1</ShowSearchBox>
+<ShowResultsInfo>1</ShowResultsInfo>
+<ParameterName1>EntryDate DD-MMM-YY</ParameterName1>
+<ParameterVal1>1-MAR-16</ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt>1</UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections>Include students who entered on or before given EntryDate</ReportDirections>

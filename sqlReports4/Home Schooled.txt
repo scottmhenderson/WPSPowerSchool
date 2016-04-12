@@ -1,0 +1,79 @@
+<ReportName>Home Schooled</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup></ReportGroup>
+<ReportDescription>Students with an exit code of home schooled</ReportDescription>
+<SQLQuery><textarea name="UF-0060051424">Select student_number, lastfirst, to_char(exitdate,'DD-Mon-YYYY') Left, '-' Returned,
+(select count(*) from calendar_day cd where cd.schoolid=s.schoolid and cd.DATE_VALUE &gt;= s.exitdate and date_value &lt;=current_date and cd.insession=1) Days_Out,
+to_char(exitcomment) exitcomment
+from students s
+where exitcode='23' and schoolid=~(curschoolid)
+union
+select 
+s.student_number, 
+s.lastfirst, 
+to_char(re.exitdate,'DD-Mon-YYYY') Left, 
+to_char(s.entrydate,'DD-Mon-YYYY') Returned, 
+(select count(*) from calendar_day where schoolid=s.schoolid and DATE_VALUE &gt;= re.exitdate and date_value &lt;s.entrydate and insession=1) Days_Out,
+to_char(re.exitcomment) exitcomment
+from reenrollments re 
+join students s on re.studentid=s.id
+where re.exitcode='23' and re.schoolid=~(curschoolid)
+order by lastfirst
+;
+</textarea></SQLQuery>
+<ReportHeader><th>StuNum</th><th>LastFirst</th><th>Left</th><th>Returned</th><th>Days Out</th><th>Comment</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox>1</ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC>1</ShowSHC>
+<UseColRe>1</UseColRe>
+<UseFixHdr>1</UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt>1</UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
