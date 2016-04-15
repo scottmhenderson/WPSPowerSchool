@@ -1,0 +1,794 @@
+~[if#common.~(gpv.action)=common]
+
+[else#common]
+<div class="container ~(gpv.action)" style="width:100%" data-userid="~[x:userid]" data-sid="~(curstudid)" data-yid="~(gpv.yid;num)" data-sc="~(gpv.sc)" data-gr="~(gpv.gr;num)" data-frn="~(gpv.frn)">
+
+~[if#trc.~(gpv.action)=trc]
+<table>
+<colgroup><col style="width:70%"><col></colgroup>
+<tbody>
+<tr>
+<td>
+	<table class="grid headerTbl" id="headerTbl~(id)">
+	<colgroup><col><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:90px"></colgroup>
+	<tbody>
+	<tr class="center">
+	<td colspan="4">Student</td>
+	<td>School Year</td>
+	<td>Quarter</td>
+	</tr>
+	<tr class="center">
+	<td>Name</td>
+	<td>YOG</td>
+	<td>ID#</td>
+	<td>Homeroom</td>
+	<td class="schYr"></td>
+	<td>~(gpv.sc)</td>
+	</tr>
+	<tr>
+	<td rowspan="2" class="stdName">~(lastfirst)</td>
+	<td rowspan="2">~(graduation_year)</td>
+	<td rowspan="2">~(student_number)</td>
+	<td rowspan="2" class="hr"></td>
+	<td colspan="2">Counselor</td>
+	</tr>
+	<tr>
+	<td colspan="2">~(counselor)</td>
+	</tr>
+	</tbody>
+	</table>
+</td>
+<td class="center">
+~[tlist_sql;
+WITH s AS (
+SELECT s.id studentid, s.exitdate, tb.storecode, tb.yearid, tb.schoolid, tb.date1, tb.date2
+FROM Students s
+  INNER JOIN TermBins tb ON s.enrollment_schoolid = tb.schoolid
+    AND s.entrydate < tb.date2
+    AND s.exitdate > tb.date1
+WHERE s.id = ~(curstudid)
+  AND replace(tb.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q')
+  AND tb.yearid = ~(gpv.yid;num)
+UNION
+SELECT re.studentid, re.exitdate, tb.storecode, tb.yearid, tb.schoolid, tb.date1, tb.date2
+FROM ReEnrollments re
+  INNER JOIN TermBins tb ON re.schoolid = tb.schoolid
+    AND re.entrydate < tb.date2
+    AND re.exitdate > tb.date1
+WHERE re.studentid = ~(curstudid)
+  AND replace(tb.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q')
+  AND tb.yearid = ~(gpv.yid;num)
+ORDER BY exitdate desc
+), hr AS (
+SELECT t.last_name tchr, sec.room
+FROM s
+  INNER JOIN cc ON s.studentid = cc.studentid
+    AND cc.dateleft >= s.date1
+    AND cc.dateenrolled <= s.date2
+  INNER JOIN Sections sec ON abs(cc.sectionid) = sec.id
+  INNER JOIN courses crs ON UPPER(cc.course_number) = UPPER(crs.course_number)
+  INNER JOIN Teachers t ON cc.teacherid = t.id
+WHERE UPPER(crs.course_name) like '%HOMEROOM%'
+ORDER BY s.exitdate desc, cc.dateleft desc
+)
+SELECT 
+  (select tchr from hr where rownum = 1) hr,
+  sch.name school,
+  sch.SchoolAddress||', '||sch.SchoolCity||', '||sch.SchoolState||' '||sch.SchoolZip citystatezip,
+  sch.schoolPhone, sch.schoolFax
+FROM s
+  INNER JOIN Schools sch ON s.schoolid = sch.school_number
+WHERE rownum = 1]
+    <div class="hide hr">~(hr;t)</div>
+	<span class="schoolName">~(schName;t)</span><br>
+	~(schoolAddress;t)<br>
+	www.westborough.org<br>
+	Phone: <span class="schoolPhone">~(schoolPhone;t)</span> &nbsp;&nbsp;&nbsp; Fax: ~(schoolFax;t)
+[/tlist_sql]
+</td>
+</tr>
+</tbody>
+</table>
+
+<table id="gradestable~(curstudid)~(gpv.yid;num)" class="grid gradestable" data-sid="~(curstudid)" data-yid="~(gpv.yid;num)" data-gr="~(gpv.gr;num)">
+<colgroup>
+    <col class="crsName">
+    <col class="lvl">
+    <col class="t1">
+    <col class="t2">
+    <col class="x1">
+    <col class="s1">
+    <col class="t3">
+    <col class="t4">
+    <col class="x2">
+    <col class="s2">
+    <col class="y1">
+    <col class="cmt">
+</colgroup>
+<thead>
+<tr>
+<th class="crsName">Course Number - Course Name<br>Teacher</th>
+<th class="lvl">Level</th>
+<th class="t1">Qrtr. 1 Grade</th>
+<th class="t2">Qrtr. 2 Grade</th>
+<th class="x1">M-Yr Assessment</th>
+<th class="s1">Sem. 1 Avg.</th>
+<th class="t3">Qrtr. 3 Grade</th>
+<th class="t4">Qrtr. 4 Grade</th>
+<th class="x2">Final Exam</th>
+<th class="s2">Sem. 2 Avg.</th>
+<th class="y1">Final Average</th>
+<th class="cmt">Teachers' Comments</th>
+</tr>    
+</thead>
+<tbody>
+~[tlist_sql;
+WITH sg AS (
+SELECT
+  sg.termid, 
+  sg.course_name,
+  sg.course_number,
+  sg.teacher_name,
+  ter.abbreviation term, ter.portion,
+  sg.storecode,
+  sg.grade,
+  sg.percent,
+  sg.earnedcrhrs,
+  sg.grade_level,
+  CASE WHEN replace(sg.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q') THEN to_char(sg.comment_value) END cmt,
+  crs.powerlink lvl
+FROM StoredGrades sg
+  INNER JOIN Terms ter ON sg.termid = ter.id AND sg.schoolid = ter.schoolid
+  LEFT JOIN Courses crs ON sg.course_number = crs.course_number
+WHERE sg.studentid = ~(curstudid)
+  AND substr(sg.termid,1,2) = '~(gpv.yid;num)'
+  AND sg.grade is not null
+  AND CASE 
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q1' AND sg.storecode IN ('Q1','T1') THEN 1
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q2' AND sg.storecode IN ('Q1','T1','Q2','T2','M1','S1') THEN 1
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q3' AND sg.storecode IN ('Q1','T1','Q2','T2','M1','S1','Q3','T3') THEN 1
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q4' AND sg.storecode IN ('Q1','T1','Q2','T2','M1','S1','Q3','T3','Q4','F1','S2') THEN 1
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q1' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 10 and 12 THEN 1
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q2' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 1 and 2 THEN 1
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q3' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 3 and 4 THEN 1
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q4' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 5 and 6 THEN 1
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q4' AND ~(gpv.gr;num) >= 9 AND sg.storecode = 'Y1' THEN 1
+    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q3' AND ~(gpv.gr;num) >= 7 AND sg.storecode = 'Y1' THEN 1
+    ELSE 0
+  END = 1
+ORDER BY sg.termid, sg.course_name
+)
+SELECT 
+  sg.course_number, sg.course_name, sg.teacher_name,
+  lvl,
+  MAX(CASE WHEN sg.storecode IN ('Q1','T1') THEN sg.grade END) t1,
+  MAX(CASE WHEN sg.storecode IN ('Q2','T2') THEN sg.grade END) t2,
+  MAX(CASE WHEN sg.storecode IN ('M1') THEN sg.grade END) x1,
+  MAX(CASE WHEN sg.storecode IN ('S1') THEN sg.grade END) s1,
+  MAX(CASE WHEN sg.storecode IN ('Q3','T3') THEN sg.grade END) t3,
+  MAX(CASE WHEN sg.storecode IN ('Q4') THEN sg.grade END) t4,
+  MAX(CASE WHEN sg.storecode IN ('F1') THEN sg.grade END) x2,
+  MAX(CASE WHEN sg.storecode IN ('S2') THEN sg.grade END) s2,
+  MAX(CASE WHEN sg.storecode IN ('Y1') THEN sg.grade END) y1,
+  MAX(cmt) cmt
+FROM sg
+GROUP BY sg.course_number, sg.course_name, sg.teacher_name, lvl
+ORDER BY sg.course_name, sg.teacher_name;alternatecolor]
+<tr>
+<td class="crsName">~(crsNum;t) &nbsp;&nbsp; ~(crsName;t)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~(tchr;t)</td>
+<td class="lvl">~(lvl;t)</td>
+<td class="t1">~(t1;t)</td>
+<td class="t2">~(t2;t)</td>
+<td class="x1">~(x1;t)</td>
+<td class="s1">~(s1;t)</td>
+<td class="t3">~(t3;t)</td>
+<td class="t4">~(t4;t)</td>
+<td class="x2">~(x2;t)</td>
+<td class="s2">~(s2;t)</td>
+<td class="y1">~(y1;t)</td>
+<td class="cmt">~(cmt;t)</td>
+</tr>
+[/tlist_sql]
+</tbody>
+</table>
+
+<table>
+<colgroup>
+    <col class="honorRollCell" style="width:33%">
+    <col class="honorRollCell" style="width:33%">
+    <col class="attsummary">
+</colgroup>
+<tbody>
+<tr>
+<td class="honorRollCell right">Honor Roll Status</td>
+<td class="honorRollCell">
+    <table class="grid msHonorRoll">
+    <thead>
+    <tr>
+    <td>T1</td>
+    <td>T2</td>
+    <td>T3</td>
+    </tr>
+    </thead>
+    <tbody>
+    ~[tlist_sql;
+    SELECT 
+      (select MAX(levelvalue) from honorroll where studentid = ~(curstudid) and yearid = ~(gpv.yid;num) and method = 'GMS Honor Roll T1') t1,
+      (select MAX(levelvalue) from honorroll where studentid = ~(curstudid) and yearid = ~(gpv.yid;num) and method = 'GMS Honor Roll T2') t2,
+      (select MAX(levelvalue) from honorroll where studentid = ~(curstudid) and yearid = ~(gpv.yid;num) and method = 'GMS Honor Roll T3') t3
+    FROM dual
+    ]
+    <tr>
+    <td>~(t1hr;t) &nbsp;</td>
+    <td>~(t2hr;t)</td>
+    <td>~(t3hr;t)</td>
+    </tr>
+    [/tlist_sql]
+    </tbody>
+    </table>
+</td>
+<td>
+    <div class="attsummary">
+    ~[tlist_sql;
+    WITH s AS (
+    SELECT s.id studentid, tb.storecode sc, cd.date_value dt
+    FROM Students s
+      INNER JOIN TermBins tb ON s.enrollment_schoolid = tb.schoolid
+        AND s.entrydate < tb.date2
+        AND s.exitdate > tb.date1
+      INNER JOIN Calendar_Day cd ON tb.schoolid = cd.schoolid
+        AND cd.date_value between tb.date1 and tb.date2
+        AND cd.date_value between s.entrydate and s.exitdate-1
+    WHERE s.id = ~(curstudid)
+      AND replace(tb.storecode,'T','Q') IN ('Q1'~[if#q2.~(gpv.sc;sqlText)=Q2],'Q2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'Q2'[/if#t2]~[if#t3.~(gpv.sc;sqlText)=T3],'Q2','Q3'[/if#t3]~[if#q3.~(gpv.sc;sqlText)=Q3],'Q2','Q3'[/if#q3]~[if#q4.~(gpv.sc;sqlText)=Q4],'Q2','Q3','Q4'[/if#q4])
+      AND tb.yearid = ~(gpv.yid;num)
+      AND cd.date_value <= sysdate
+    UNION
+    SELECT re.studentid, tb.storecode sc, cd.date_value dt
+    FROM ReEnrollments re
+      INNER JOIN TermBins tb ON re.schoolid = tb.schoolid
+        AND re.entrydate < tb.date2
+        AND re.exitdate > tb.date1
+      INNER JOIN Calendar_Day cd ON tb.schoolid = cd.schoolid
+        AND cd.date_value between tb.date1 and tb.date2
+        AND cd.date_value between re.entrydate and re.exitdate-1
+    WHERE re.studentid = ~(curstudid)
+        AND replace(tb.storecode,'T','Q') IN ('Q1'~[if#q2.~(gpv.sc;sqlText)=Q2],'Q2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'Q2'[/if#t2]~[if#t3.~(gpv.sc;sqlText)=T3],'Q2','Q3'[/if#t3]~[if#q3.~(gpv.sc;sqlText)=Q3],'Q2','Q3'[/if#q3]~[if#q4.~(gpv.sc;sqlText)=Q4],'Q2','Q3','Q4'[/if#q4])
+      AND tb.yearid = ~(gpv.yid;num)
+      AND cd.date_value <= sysdate
+    ORDER BY sc, dt
+    ), att AS (
+    SELECT replace(s.sc,'T','Q') sc, s.dt, 
+      CASE WHEN attc.presence_status_cd = 'Absent' THEN 1 ELSE 0 END a,
+      nvl((SELECT 1 FROM Att_Code_Code_Entity acce INNER JOIN Code_Entity ce ON acce.code_entityid = ce.id AND ce.ce_code = 'Tardy' WHERE att.attendance_codeid = acce.attendance_codeid),0) t,
+      nvl((SELECT 1 FROM Att_Code_Code_Entity acce INNER JOIN Code_Entity ce ON acce.code_entityid = ce.id AND ce.ce_code = 'Dismissed' WHERE att.attendance_codeid = acce.attendance_codeid),0) d
+    FROM s
+      INNER JOIN Attendance att ON s.studentid = att.studentid
+        AND s.dt = att.att_date
+      INNER JOIN Attendance_Code attc ON att.attendance_codeid = attc.id
+    WHERE att.att_mode_code = 'ATT_ModeDaily'
+    )
+    SELECT 
+      (SELECT sum(a) FROM att WHERE sc = 'Q1') t1a,
+      (SELECT sum(a) FROM att WHERE sc = 'Q2') t2a,
+      (SELECT sum(a) FROM att WHERE sc = 'Q3') t3a,
+      (SELECT sum(a) FROM att WHERE sc = 'Q4') t4a,
+      (SELECT sum(a) FROM att) y1a,
+      (SELECT sum(t) FROM att WHERE sc = 'Q1') t1t,
+      (SELECT sum(t) FROM att WHERE sc = 'Q2') t2t,
+      (SELECT sum(t) FROM att WHERE sc = 'Q3') t3t,
+      (SELECT sum(t) FROM att WHERE sc = 'Q4') t4t,
+      (SELECT sum(t) FROM att) y1t,
+      (SELECT sum(d) FROM att WHERE sc = 'Q1') t1d,
+      (SELECT sum(d) FROM att WHERE sc = 'Q2') t2d,
+      (SELECT sum(d) FROM att WHERE sc = 'Q3') t3d,
+      (SELECT sum(d) FROM att WHERE sc = 'Q4') t4d,
+      (SELECT sum(d) FROM att) y1d
+    FROM dual
+    ]
+    <table class="grid attTbl">
+    <thead>
+    <tr>
+    <td>Attendance</td>
+    <td class="t1">Term 1</td>
+    <td class="t2">Term 2</td>
+    <td class="t3">Term 3</td>
+    <td class="t4">Term 4</td>
+    <td class="y1">YTD</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="absent">
+    <td>Absent</td>
+    <td class="t1">~(t1a;l)</td>
+    <td class="t2">~(t2a;l)</td>
+    <td class="t3">~(t3a;l)</td>
+    <td class="t4">~(t4a;l)</td>
+    <td class="y1">~(y1a;l)</td>
+    </tr>
+    <tr class="tardy">
+    <td>Tardy</td>
+    <td class="t1">~(t1t;l)</td>
+    <td class="t2">~(t2t;l)</td>
+    <td class="t3">~(t3t;l)</td>
+    <td class="t4">~(t4t;l)</td>
+    <td class="y1">~(y1t;l)</td>
+    </tr>
+    <tr class="dismissed">
+    <td>Dismissed</td>
+    <td class="t1">~(t1d;l)</td>
+    <td class="t2">~(t2d;l)</td>
+    <td class="t3">~(t3d;l)</td>
+    <td class="t4">~(t4d;l)</td>
+    <td class="y1">~(y1d;l)</td>
+    </tr>
+    </tbody>
+    </table>
+    [/tlist_sql]
+    </div>
+</td>
+</tr>
+</body>
+</table>
+
+[/if#trc]
+
+~[if#src.~(gpv.action)=src]
+
+~[tlist_sql;
+WITH s AS (
+SELECT s.id studentid, s.first_name || ' ' || s.last_name std, s.grade_level curgr, s.exitdate, tb.storecode, tb.yearid, tb.schoolid, tb.date1, tb.date2
+FROM Students s
+  INNER JOIN TermBins tb ON s.enrollment_schoolid = tb.schoolid
+    AND s.entrydate < tb.date2
+    AND s.exitdate > tb.date1
+WHERE s.id = ~(curstudid)
+  AND replace(tb.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q')
+  AND tb.yearid = ~(gpv.yid;num)
+UNION
+SELECT re.studentid, s.first_name || ' ' || s.last_name std, re.grade_level curgr, re.exitdate, tb.storecode, tb.yearid, tb.schoolid, tb.date1, tb.date2
+FROM Students s
+  INNER JOIN ReEnrollments re ON s.id = re.studentid
+  INNER JOIN TermBins tb ON re.schoolid = tb.schoolid
+    AND re.entrydate < tb.date2
+    AND re.exitdate > tb.date1
+WHERE re.studentid = ~(curstudid)
+  AND replace(tb.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q')
+  AND tb.yearid = ~(gpv.yid;num)
+ORDER BY exitdate desc
+), n AS (
+SELECT s.id studentid, CASE WHEN ~(gpv.yid;num) = ~(curyearid) THEN s.sched_nextyeargrade ELSE s.grade_level END nyg, s.entrydate
+FROM Students s
+  INNER JOIN terms ter ON s.enrollment_schoolid = ter.schoolid
+    AND s.entrydate < ter.lastday
+    AND s.exitdate > ter.firstday
+    AND ter.isyearrec = 1
+WHERE s.id = ~(curstudid)
+  AND ter.yearid IN (~(gpv.yid;num),~(gpv.yid;num)+1)
+UNION
+SELECT re.studentid, re.grade_level nyg, re.entrydate
+FROM Students s
+  INNER JOIN ReEnrollments re ON s.id = re.studentid
+  INNER JOIN TermBins tb ON re.schoolid = tb.schoolid
+    AND re.entrydate < tb.date2
+    AND re.exitdate > tb.date1
+WHERE re.studentid = ~(curstudid)
+  AND tb.yearid = ~(gpv.yid;num)+1
+ORDER BY entrydate
+), hr AS (
+SELECT t.first_name || ' ' || t.last_name tchr, sec.room, crs.course_name
+FROM s
+  INNER JOIN cc ON s.studentid = cc.studentid
+    AND cc.dateleft >= s.date1
+    AND cc.dateenrolled <= s.date2
+  INNER JOIN Sections sec ON abs(cc.sectionid) = sec.id
+  INNER JOIN courses crs ON UPPER(cc.course_number) = UPPER(crs.course_number)
+  INNER JOIN Teachers t ON cc.teacherid = t.id
+WHERE UPPER(crs.course_name) like '%HOMEROOM%'
+ORDER BY s.exitdate desc, cc.dateleft desc
+)
+SELECT 
+  s.schoolid,
+  sch.name school,
+  sch.schoolcity town,
+  CASE WHEN ~(gpv.gr;num) = 0 THEN 'Kindergarten' ELSE 'Grade ' || to_char(~(gpv.gr;num)) END gr,
+  sch.principal,
+  sch.asstprincipal,
+  s.std,
+  (1990+~(gpv.yid;num))||'-'||(1991+~(gpv.yid;num)) yr,
+  (select tchr from hr where rownum = 1) tchr,
+  CASE 
+    WHEN ~(gpv.yid;num) > ~(curyearid) THEN 'future year'
+    WHEN n.nyg > s.curgr THEN 'Student has been promoted to grade ' || n.nyg
+    WHEN n.nyg = s.curgr THEN 'Student has been retained in grade ' || n.nyg
+    WHEN n.nyg < s.curgr THEN 'Student has been demoted to grade ' || n.nyg
+  END promoted,
+  '' mission,
+  UPPER(sch.name) uschool
+FROM (select * from s where rownum = 1) s
+  INNER JOIN Schools sch ON s.schoolid = sch.school_number
+  LEFT JOIN (select nyg, studentid from n where rownum = 1) n ON s.studentid = n.studentid
+]
+<table class="k2Header1" data-schoolid="~(schoolid;l)" data-school="~(school;t)" data-town="~(town;t)" data-gr="~(gr;t)" data-principal="~(principal;t)" data-aprincipal="~(aprincipal;t)" data-std="~(std;t)" data-yr="~(yr;t)" data-tchr="~(tchr;t)" data-promoted="~(promoted;t)" data-mission="~(mission;t)">
+<colgroup><col><col style="width:85%"></colgroup>
+<tbody>
+<tr>
+<td rowspan="4"><img src="/clg/reportcards/schoolLogo~(schoolid;l).png" class="schoolLogo"></td>
+<td>~(uschool;t)</td>
+</tr>
+<tr>
+<td>~(town;t), Massachusetts</td>
+</tr>
+<tr>
+<td>~(gr;t) Progress Report</td>
+</tr>
+<tr>
+<td>~(principal;t), Principal</td>
+</tr>
+</tbody>
+</table>
+
+<table class="k2Header2">
+<colgroup><col style="width: 50px;"><col style="width:60%"><col style="width: 50px;"><col></colgroup>
+<tbody>
+<tr>
+<td>Student:</td>
+<td class="lowerborder">~(std;t)</td>
+<td>Year:</td>
+<td class="lowerborder">~(yr;t)</td>
+</tr>
+<tr>
+<td>Teacher:</td>
+<td class="lowerborder">~(tchr;t)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+[/tlist_sql]
+
+<table class="k2Header3">
+<colgroup><col width="48%"><col><col width="48%"></colgroup>
+<tbody>
+<tr>
+<td>
+~[if#k2.~(gpv.gr;num)<=3]
+	~[tlist_sql;
+	WITH s AS (
+	SELECT s.id studentid, tb.storecode sc, cd.date_value dt
+	FROM Students s
+	  INNER JOIN TermBins tb ON s.enrollment_schoolid = tb.schoolid
+	    AND s.entrydate < tb.date2
+	    AND s.exitdate > tb.date1
+	  INNER JOIN Calendar_Day cd ON tb.schoolid = cd.schoolid
+	    AND cd.date_value between tb.date1 and tb.date2
+	    AND cd.date_value between s.entrydate and s.exitdate-1
+	WHERE s.id = ~(curstudid)
+	  AND replace(tb.storecode,'T','Q') IN ('Q1'~[if#q2.~(gpv.sc;sqlText)=Q2],'Q2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'Q2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'Q2','Q3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'Q2','Q3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'Q2','Q3'[/if#q4])
+	  AND tb.yearid = ~(gpv.yid;num)
+	  AND cd.date_value <= sysdate
+	UNION
+	SELECT re.studentid, tb.storecode sc, cd.date_value dt
+	FROM ReEnrollments re
+	  INNER JOIN TermBins tb ON re.schoolid = tb.schoolid
+	    AND re.entrydate < tb.date2
+	    AND re.exitdate > tb.date1
+	  INNER JOIN Calendar_Day cd ON tb.schoolid = cd.schoolid
+	    AND cd.date_value between tb.date1 and tb.date2
+	    AND cd.date_value between re.entrydate and re.exitdate-1
+	WHERE re.studentid = ~(curstudid)
+	  AND replace(tb.storecode,'T','Q') IN ('Q1'~[if#q2.~(gpv.sc;sqlText)=Q2],'Q2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'Q2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'Q2','Q3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'Q2','Q3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'Q2','Q3'[/if#q4])
+	  AND tb.yearid = ~(gpv.yid;num)
+	  AND cd.date_value <= sysdate
+	ORDER BY sc, dt
+	), att AS (
+	SELECT replace(s.sc,'Q','T') sc, s.dt, 
+	  CASE WHEN attc.presence_status_cd = 'Absent' THEN 1 ELSE 0 END a,
+	  nvl((SELECT 1 FROM Att_Code_Code_Entity acce INNER JOIN Code_Entity ce ON acce.code_entityid = ce.id AND ce.ce_code = 'Tardy' WHERE att.attendance_codeid = acce.attendance_codeid),0) t,
+	  nvl((SELECT 1 FROM Att_Code_Code_Entity acce INNER JOIN Code_Entity ce ON acce.code_entityid = ce.id AND ce.ce_code = 'Dismissed' WHERE att.attendance_codeid = acce.attendance_codeid),0) d
+	FROM s
+	  INNER JOIN Attendance att ON s.studentid = att.studentid
+	    AND s.dt = att.att_date
+	  INNER JOIN Attendance_Code attc ON att.attendance_codeid = attc.id
+	WHERE att.att_mode_code = 'ATT_ModeDaily'
+	)
+	SELECT 
+	  (SELECT sum(a) FROM att WHERE sc = 'T1') t1a,
+	  (SELECT sum(a) FROM att WHERE sc = 'T2') t2a,
+	  (SELECT sum(a) FROM att WHERE sc = 'T3') t3a,
+	  (SELECT sum(t) FROM att WHERE sc = 'T1') t1t,
+	  (SELECT sum(t) FROM att WHERE sc = 'T2') t2t,
+	  (SELECT sum(t) FROM att WHERE sc = 'T3') t3t,
+	  (SELECT sum(d) FROM att WHERE sc = 'T1') t1d,
+	  (SELECT sum(d) FROM att WHERE sc = 'T2') t2d,
+	  (SELECT sum(d) FROM att WHERE sc = 'T3') t3d
+	FROM dual
+	]
+	<table class="grid attTbl">
+	<thead>
+	<tr>
+	<td>Attendance</td>
+	<td class="t1">Term 1</td>
+	<td class="t2">Term 2</td>
+	<td class="t3">Term 3</td>
+	</tr>
+	</thead>
+	<tbody>
+	<tr class="absent">
+	<td>Absent</td>
+	<td class="t1">~(t1a;l)</td>
+	<td class="t2">~(t2a;l)</td>
+	<td class="t3">~(t3a;l)</td>
+	</tr>
+	<tr class="tardy">
+	<td>Tardy</td>
+	<td class="t1">~(t1t;l)</td>
+	<td class="t2">~(t2t;l)</td>
+	<td class="t3">~(t3t;l)</td>
+	</tr>
+	<tr class="dismissed">
+	<td>Dismissed</td>
+	<td class="t1">~(t1d;l)</td>
+	<td class="t2">~(t2d;l)</td>
+	<td class="t3">~(t3d;l)</td>
+	</tr>
+	</tbody>
+	</table>
+	[/tlist_sql]
+[/if#k2]
+</td>
+<td></td>
+<td>
+	<table class="grid behaviorkey">
+	<colgroup><col width="30px"><col></colgroup>
+	<thead>
+	<tr>
+	<td colspan="100%" class="center">BEHAVIOR - EFFORT SCALE</td>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+	<td>C</td>
+	<td>Consistently</td>
+	</tr>
+	<tr>
+	<td>U</td>
+	<td>Usually</td>
+	</tr>
+	<tr>
+	<td>S</td>
+	<td>Sometimes</td>
+	</tr>
+	<tr>
+	<td>R</td>
+	<td>Rarely</td>
+	</tr>
+	</tbody>
+	</table>
+</td>
+</tr>
+</tbody>
+</table>
+
+<table class="grid performancekey">
+<colgroup><col width="30px"><col width="60px"><col></colgroup>
+<thead>
+<tr>
+<td colspan="100%">PERFORMANCE SCALE</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>Advanced</td>
+<td>Student work consistently demonstrates advanced understanding of grade level benchmark</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Proficient</td>
+<td>Student work consistently demonstrates proficient understanding of grade level benchmark</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Approaching</td>
+<td>Student work demonstrates progress towards understanding grade level benchmark</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Limited</td>
+<td>Student work does not meet grade level benchmark</td>
+</tr>
+<tr>
+<td></td>
+<td>*</td>
+<td>Indicates the student's progress is being measured against modified curriculum benchmark</td>
+</tr>
+<tr>
+<td>NA</td>
+<td></td>
+<td>Indicates the curriculum standard was not addressed that trimester</td>
+</tr>
+<tr>
+<td>ME</td>
+<td>Medical</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<table class="grid promoted">
+<colgroup><col class="standard"><col class="t1"><col class="t2"><col class="t3"></colgroup>
+<tbody>
+<tr>
+<td>Promoted to next grade level:</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<div class="tbl pg1">
+  <div class="tablerow">
+	<div class="col p1c1"></div>
+	<div class="colGap"></div>
+	<div class="col p1c2"></div>
+  </div>
+</div>
+
+<div class="pageafter">
+	<div class="noprint"></div>
+</div>
+
+<div class="tbl pg2">
+  <div class="tablerow">
+	<div class="col p2c1"></div>
+	<div class="colGap"></div>
+	<div class="col p2c2"></div>
+  </div>
+</div>
+
+<table class="stan2grade">
+<thead>
+<tr>
+<th>Standard Lvl 1</th>
+<th>Standard Lvl 2</th>
+<th>Standard Lvl 3</th>
+<th>Standard Lvl 4</th>
+<th>Standard Lvl 5</th>
+<th>Crs Info</th>
+</tr>
+</thead>
+<tbody>
+~[tlist_sql;
+WITH stdStan AS (
+SELECT DISTINCT cc.studentid, cc.course_number, tb.storecode, stan.id standardid, sec.dcid sectionsdcid, 
+  to_char(CASE WHEN cc.dateleft < tb.date2 THEN cc.dateleft ELSE tb.date2 END,'YYYYMMDD') endDate,
+  crs.course_name, t.lastfirst tchr
+FROM cc
+  INNER JOIN Sections sec ON abs(cc.sectionid) = sec.id
+  INNER JOIN Teachers t ON sec.teacher = t.id
+  INNER JOIN TermBins tb ON cc.schoolid = tb.schoolid
+    AND sec.termid = tb.termid
+    AND cc.dateenrolled < tb.date2
+    AND cc.dateleft > tb.date1
+  INNER JOIN Courses crs ON UPPER(cc.course_number) = UPPER(crs.course_number)
+  INNER JOIN Standards stan ON ',' || stan.courses || ',' LIKE '%,' || sec.course_number || ',%'
+WHERE cc.studentid = ~(curstudid)
+  AND tb.yearid = ~(gpv.yid;num)
+  AND tb.storecode IN ('T1'~[if#q2.~(gpv.sc;sqlText)=Q2],'T2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'T2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'T2','T3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'T2','T3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'T2','T3'[/if#q4])
+), stan AS (
+SELECT 
+  stan1.name stan1Name, stan1.description stan1Desc, stan1.identifier stan1id, stan1.subjectarea stan1sub, stan1.sortorder stan1so, stan1.id stan1standardid, stan1.allowassignments stan1graded, stan1.includecomment stan1comment, stan1.levelvalue stan1lvl, 0 stan1exclude,
+  stan2.name stan2Name, stan2.description stan2Desc, stan2.identifier stan2id, stan2.subjectarea stan2sub, stan2.sortorder stan2so, stan2.id stan2standardid, stan2.allowassignments stan2graded, stan2.includecomment stan2comment, stan2.levelvalue stan2lvl, stan2.unused1 stan2exclude,
+  stan3.name stan3Name, stan3.description stan3Desc, stan3.identifier stan3id, stan3.subjectarea stan3sub, stan3.sortorder stan3so, stan3.id stan3standardid, stan3.allowassignments stan3graded, stan3.includecomment stan3comment, stan3.levelvalue stan3lvl, stan3.unused1 stan3exclude,
+  stan4.name stan4Name, stan4.description stan4Desc, stan4.identifier stan4id, stan4.subjectarea stan4sub, stan4.sortorder stan4so, stan4.id stan4standardid, stan4.allowassignments stan4graded, stan4.includecomment stan4comment, stan4.levelvalue stan4lvl, stan4.unused1 stan4exclude,
+  stan5.name stan5Name, stan5.description stan5Desc, stan5.identifier stan5id, stan5.subjectarea stan5sub, stan5.sortorder stan5so, stan5.id stan5standardid, stan5.allowassignments stan5graded, stan5.includecomment stan5comment, stan5.levelvalue stan5lvl, stan5.unused1 stan5exclude
+FROM Standards stan1
+  INNER JOIN Standards stan2 ON stan1.identifier = stan2.listparent
+  LEFT JOIN Standards stan3 ON stan2.identifier = stan3.listparent
+  LEFT JOIN Standards stan4 ON stan3.identifier = stan4.listparent
+  LEFT JOIN Standards stan5 ON stan4.identifier = stan5.listparent
+WHERE stan1.listparent is null
+)
+SELECT 
+  stan.stan1Name, stan.stan1Desc, stan.stan1id, stan.stan1sub, stan.stan1so, stan.stan1standardid, stan.stan1graded, stan.stan1comment, stan.stan1exclude,
+  stan.stan2Name, stan.stan2Desc, stan.stan2id, stan.stan2sub, stan.stan2so, stan.stan2standardid, stan.stan2graded, stan.stan2comment, stan.stan2exclude,
+  stan.stan3Name, stan.stan3Desc, stan.stan3id, stan.stan3sub, stan.stan3so, stan.stan3standardid, stan.stan3graded, stan.stan3comment, stan.stan3exclude,
+  stan.stan4Name, stan.stan4Desc, stan.stan4id, stan.stan4sub, stan.stan4so, stan.stan4standardid, stan.stan4graded, stan.stan4comment, stan.stan4exclude,
+  stan.stan5Name, stan.stan5Desc, stan.stan5id, stan.stan5sub, stan.stan5so, stan.stan5standardid, stan.stan5graded, stan.stan5comment, stan.stan5exclude,
+  stdStan.studentid, stdStan.course_number, stdStan.storecode, stdStan.standardid, stdStan.sectionsdcid, stdStan.endDate, stdStan.course_name, stdStan.tchr
+FROM stan
+  INNER JOIN stdStan ON nvl(nvl(nvl(nvl(stan.stan5standardid,stan.stan4standardid),stan.stan3standardid),stan.stan2standardid),stan.stan1standardid) = stdStan.standardid
+ORDER BY stan1so, stan1Name, stan2so, stan2Name, stan3so, stan3Name, stan4so, stan4Name, stan5so, stan5Name, stdStan.course_number, stdStan.storecode desc, stdStan.endDate desc
+]
+<tr>
+<td class="standard1" data-stanname="~(stan1name;t)" data-standesc="~(stan1desc;t)" data-stanid="~(stan1id;t)" data-stansub="~(stan1sub;t)" data-stansort="~(stan1so;t)" data-standardid="~(stan1standardid;t)" data-stangraded="~(stan1graded;t)" data-stancomment="~(stan1comment;t)" data-excludefromreport="~(stan1exclude;t)">~(stan1name;t) - ~(stan1sub;t) - ~(stan1graded;t) - ~(stan1comment;t)</td>
+<td class="standard2" data-stanname="~(stan2name;t)" data-standesc="~(stan2desc;t)" data-stanid="~(stan2id;t)" data-stansub="~(stan2sub;t)" data-stansort="~(stan2so;t)" data-standardid="~(stan2standardid;t)" data-stangraded="~(stan2graded;t)" data-stancomment="~(stan2comment;t)" data-excludefromreport="~(stan2exclude;t)">~(stan2name;t) - ~(stan2sub;t) - ~(stan2graded;t) - ~(stan2comment;t)</td>
+<td class="standard3" data-stanname="~(stan3name;t)" data-standesc="~(stan3desc;t)" data-stanid="~(stan3id;t)" data-stansub="~(stan3sub;t)" data-stansort="~(stan3so;t)" data-standardid="~(stan3standardid;t)" data-stangraded="~(stan3graded;t)" data-stancomment="~(stan3comment;t)" data-excludefromreport="~(stan3exclude;t)">~(stan3name;t) - ~(stan3sub;t) - ~(stan3graded;t) - ~(stan3comment;t)</td>
+<td class="standard4" data-stanname="~(stan4name;t)" data-standesc="~(stan4desc;t)" data-stanid="~(stan4id;t)" data-stansub="~(stan4sub;t)" data-stansort="~(stan4so;t)" data-standardid="~(stan4standardid;t)" data-stangraded="~(stan4graded;t)" data-stancomment="~(stan4comment;t)" data-excludefromreport="~(stan4exclude;t)">~(stan4name;t) - ~(stan4sub;t) - ~(stan4graded;t) - ~(stan4comment;t)</td>
+<td class="standard5" data-stanname="~(stan5name;t)" data-standesc="~(stan5desc;t)" data-stanid="~(stan5id;t)" data-stansub="~(stan5sub;t)" data-stansort="~(stan5so;t)" data-standardid="~(stan5standardid;t)" data-stangraded="~(stan5graded;t)" data-stancomment="~(stan5comment;t)" data-excludefromreport="~(stan5exclude;t)">~(stan5name;t) - ~(stan5sub;t) - ~(stan5graded;t) - ~(stan5comment;t)</td>
+<td class="ccinfo" data-sid="~(sid;l)" data-crsnum="~(crsnum;t)" data-sc="~(sc;t)" data-standardid="~(standardid;t)" data-sectionsdcid="~(sectionsdcid;t)" data-enddate="~(enddate;l)" data-crsname="~(crsName;t)" data-teacher="~(teacher;t)">~(crsnum;t) - ~(sc;t) - ~(enddate;l)</td>
+</tr>
+[/tlist_sql]
+</tbody>
+</table>
+
+<table class="tempStanGrades">
+<thead>
+<tr>
+<th>StandardID</th>
+<th>SectionsDCID</th>
+<th>Section</th>
+<th>StoreCode</th>
+<th>Percent</th>
+<th>Grade</th>
+</tr>
+</thead>
+<tbody>
+~[tlist_sql;
+SELECT sg.standardsid, sec.id sectionid, sec.course_number, sec.section_number, sg.storecode, 100 percent, sg.transaveragescore
+FROM Students s
+  INNER JOIN StandardsGrades sg ON s.id = sg.studentid
+  INNER JOIN Standards stan ON sg.standardsid = stan.id
+  INNER JOIN Sections sec ON ',' || stan.courses || ',' LIKE '%,' || sec.course_number || ',%'
+  INNER JOIN CC ON s.id = cc.studentid
+  	AND sec.id = abs(cc.sectionid)
+WHERE s.id = ~(curstudid)
+  AND sg.transaveragescore is not null
+  AND sg.storecode IN ('T1'~[if#q2.~(gpv.sc;sqlText)=Q2],'T2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'T2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'T2','T3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'T2','T3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'T2','T3'[/if#q4])
+  AND sg.yearid = ~(gpv.yid;num)
+]
+<tr>
+<td class="standardid" data-standardid="~(standardid;l)">~(standardid;l)</td>
+<td class="sectionsdcid" data-sectionsdcid="~(sectionsdcid;t)">~(sectionsdcid;t)</td>
+<td class="section" data-crsnum="~(crsNum;t)" data-secnum="~(secNum;t)">~(crsNum;t).~(secNum;t)</td>
+<td class="sc" data-sc="~(sc;t)">~(sc;t)</td>
+<td class="per" data-per="~(per;l)">~(per;l)</td>
+<td class="grade" data-grade="~(grade;t)">~(grade;t)</td>
+</tr>
+[/tlist_sql]
+</tbody>
+</table>
+
+<table class="tempStanComments">
+<thead>
+<tr>
+<th>StandardID</th>
+<th>SchoolsDCID</th>
+<th>SectionsDCID</th>
+<th>StoreCode</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+~[tlist_sql;
+SELECT stan.id standardid, sch.dcid schoolsdcid, sec.id sectionid, sg.storecode, sg.comment_value cmt
+FROM Students s
+  INNER JOIN CC ON s.id = cc.studentid
+  INNER JOIN Sections sec ON abs(cc.sectionid) = sec.id
+  INNER JOIN Schools sch ON sec.schoolid = sch.school_number
+  INNER JOIN Standards stan ON ',' || stan.courses || ',' LIKE '%,' || sec.course_number || ',%'
+  INNER JOIN StandardsGrades sg ON s.id = sg.studentid
+    AND stan.id = sg.standardsid
+WHERE s.id = ~(curstudid)
+  AND stan.includecomment = 1
+  AND sec.termid LIKE to_char(sg.yearid)||'__'
+  AND sg.storecode IN ('T1'~[if#q2.~(gpv.sc;sqlText)=Q2],'T2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'T2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'T2','T3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'T2','T3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'T2','T3'[/if#q4])
+  AND sg.yearid = ~(gpv.yid;num)
+ORDER BY standardid, schoolsdcid, sectionid, storecode
+]
+<tr>
+<td class="standardid" data-standardid="~(standardid;l)">~(standardid;l)</td>
+<td class="schoolsdcid" data-schoolsdcid="~(schoolsdcid;l)">~(schoolsdcid;l)</td>
+<td class="sectionsdcid" data-sectionsdcid="~(sectionsdcid;t)">~(sectionsdcid;t)</td>
+<td class="sc" data-sc="~(sc;t)">~(sc;t)</td>
+<td class="comment" data-comment="~(comment;t)">~(comment;t)</td>
+</tr>
+[/tlist_sql]
+</tbody>
+</table>
+[/if#src]
+
+</div>
+[/if#common]
