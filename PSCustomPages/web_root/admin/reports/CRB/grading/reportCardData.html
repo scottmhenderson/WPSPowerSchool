@@ -680,10 +680,10 @@ WHERE cc.studentid = ~(curstudid)
 ), stan AS (
 SELECT 
   stan1.name stan1Name, stan1.description stan1Desc, stan1.identifier stan1id, stan1.subjectarea stan1sub, stan1.sortorder stan1so, stan1.id stan1standardid, stan1.allowassignments stan1graded, stan1.includecomment stan1comment, stan1.levelvalue stan1lvl, 0 stan1exclude,
-  stan2.name stan2Name, stan2.description stan2Desc, stan2.identifier stan2id, stan2.subjectarea stan2sub, stan2.sortorder stan2so, stan2.id stan2standardid, stan2.allowassignments stan2graded, stan2.includecomment stan2comment, stan2.levelvalue stan2lvl, stan2.unused1 stan2exclude,
-  stan3.name stan3Name, stan3.description stan3Desc, stan3.identifier stan3id, stan3.subjectarea stan3sub, stan3.sortorder stan3so, stan3.id stan3standardid, stan3.allowassignments stan3graded, stan3.includecomment stan3comment, stan3.levelvalue stan3lvl, stan3.unused1 stan3exclude,
-  stan4.name stan4Name, stan4.description stan4Desc, stan4.identifier stan4id, stan4.subjectarea stan4sub, stan4.sortorder stan4so, stan4.id stan4standardid, stan4.allowassignments stan4graded, stan4.includecomment stan4comment, stan4.levelvalue stan4lvl, stan4.unused1 stan4exclude,
-  stan5.name stan5Name, stan5.description stan5Desc, stan5.identifier stan5id, stan5.subjectarea stan5sub, stan5.sortorder stan5so, stan5.id stan5standardid, stan5.allowassignments stan5graded, stan5.includecomment stan5comment, stan5.levelvalue stan5lvl, stan5.unused1 stan5exclude
+  stan2.name stan2Name, stan2.description stan2Desc, stan2.identifier stan2id, stan2.subjectarea stan2sub, stan2.sortorder stan2so, stan2.id stan2standardid, stan2.allowassignments stan2graded, stan2.includecomment stan2comment, stan2.levelvalue stan2lvl, --stan2.unused1 stan2exclude,
+  stan3.name stan3Name, stan3.description stan3Desc, stan3.identifier stan3id, stan3.subjectarea stan3sub, stan3.sortorder stan3so, stan3.id stan3standardid, stan3.allowassignments stan3graded, stan3.includecomment stan3comment, stan3.levelvalue stan3lvl, --stan3.unused1 stan3exclude,
+  stan4.name stan4Name, stan4.description stan4Desc, stan4.identifier stan4id, stan4.subjectarea stan4sub, stan4.sortorder stan4so, stan4.id stan4standardid, stan4.allowassignments stan4graded, stan4.includecomment stan4comment, stan4.levelvalue stan4lvl, --stan4.unused1 stan4exclude,
+  stan5.name stan5Name, stan5.description stan5Desc, stan5.identifier stan5id, stan5.subjectarea stan5sub, stan5.sortorder stan5so, stan5.id stan5standardid, stan5.allowassignments stan5graded, stan5.includecomment stan5comment, stan5.levelvalue stan5lvl--, stan5.unused1 stan5exclude
 FROM Standards stan1
   INNER JOIN Standards stan2 ON stan1.identifier = stan2.listparent
   LEFT JOIN Standards stan3 ON stan2.identifier = stan3.listparent
@@ -692,22 +692,22 @@ FROM Standards stan1
 WHERE stan1.listparent is null
 )
 SELECT 
-  stan.stan1Name, stan.stan1Desc, stan.stan1id, stan.stan1sub, stan.stan1so, stan.stan1standardid, stan.stan1graded, stan.stan1comment, stan.stan1exclude,
-  stan.stan2Name, stan.stan2Desc, stan.stan2id, stan.stan2sub, stan.stan2so, stan.stan2standardid, stan.stan2graded, stan.stan2comment, stan.stan2exclude,
-  stan.stan3Name, stan.stan3Desc, stan.stan3id, stan.stan3sub, stan.stan3so, stan.stan3standardid, stan.stan3graded, stan.stan3comment, stan.stan3exclude,
-  stan.stan4Name, stan.stan4Desc, stan.stan4id, stan.stan4sub, stan.stan4so, stan.stan4standardid, stan.stan4graded, stan.stan4comment, stan.stan4exclude,
-  stan.stan5Name, stan.stan5Desc, stan.stan5id, stan.stan5sub, stan.stan5so, stan.stan5standardid, stan.stan5graded, stan.stan5comment, stan.stan5exclude,
+  stan.stan1Name, stan.stan1Desc, stan.stan1id, stan.stan1sub, stan.stan1so, stan.stan1standardid, stan.stan1graded, stan.stan1comment, --stan.stan1exclude,
+  stan.stan2Name, stan.stan2Desc, stan.stan2id, stan.stan2sub, stan.stan2so, stan.stan2standardid, stan.stan2graded, stan.stan2comment, --stan.stan2exclude,
+  stan.stan3Name, stan.stan3Desc, stan.stan3id, stan.stan3sub, stan.stan3so, stan.stan3standardid, stan.stan3graded, stan.stan3comment, --stan.stan3exclude,
+  stan.stan4Name, stan.stan4Desc, stan.stan4id, stan.stan4sub, stan.stan4so, stan.stan4standardid, stan.stan4graded, stan.stan4comment, --stan.stan4exclude,
+  stan.stan5Name, stan.stan5Desc, stan.stan5id, stan.stan5sub, stan.stan5so, stan.stan5standardid, stan.stan5graded, stan.stan5comment, --stan.stan5exclude,
   stdStan.studentid, stdStan.course_number, stdStan.storecode, stdStan.standardid, stdStan.sectionsdcid, stdStan.endDate, stdStan.course_name, stdStan.tchr
 FROM stan
   INNER JOIN stdStan ON nvl(nvl(nvl(nvl(stan.stan5standardid,stan.stan4standardid),stan.stan3standardid),stan.stan2standardid),stan.stan1standardid) = stdStan.standardid
 ORDER BY stan1so, stan1Name, stan2so, stan2Name, stan3so, stan3Name, stan4so, stan4Name, stan5so, stan5Name, stdStan.course_number, stdStan.storecode desc, stdStan.endDate desc
 ]
 <tr>
-<td class="standard1" data-stanname="~(stan1name;t)" data-standesc="~(stan1desc;t)" data-stanid="~(stan1id;t)" data-stansub="~(stan1sub;t)" data-stansort="~(stan1so;t)" data-standardid="~(stan1standardid;t)" data-stangraded="~(stan1graded;t)" data-stancomment="~(stan1comment;t)" data-excludefromreport="~(stan1exclude;t)">~(stan1name;t) - ~(stan1sub;t) - ~(stan1graded;t) - ~(stan1comment;t)</td>
-<td class="standard2" data-stanname="~(stan2name;t)" data-standesc="~(stan2desc;t)" data-stanid="~(stan2id;t)" data-stansub="~(stan2sub;t)" data-stansort="~(stan2so;t)" data-standardid="~(stan2standardid;t)" data-stangraded="~(stan2graded;t)" data-stancomment="~(stan2comment;t)" data-excludefromreport="~(stan2exclude;t)">~(stan2name;t) - ~(stan2sub;t) - ~(stan2graded;t) - ~(stan2comment;t)</td>
-<td class="standard3" data-stanname="~(stan3name;t)" data-standesc="~(stan3desc;t)" data-stanid="~(stan3id;t)" data-stansub="~(stan3sub;t)" data-stansort="~(stan3so;t)" data-standardid="~(stan3standardid;t)" data-stangraded="~(stan3graded;t)" data-stancomment="~(stan3comment;t)" data-excludefromreport="~(stan3exclude;t)">~(stan3name;t) - ~(stan3sub;t) - ~(stan3graded;t) - ~(stan3comment;t)</td>
-<td class="standard4" data-stanname="~(stan4name;t)" data-standesc="~(stan4desc;t)" data-stanid="~(stan4id;t)" data-stansub="~(stan4sub;t)" data-stansort="~(stan4so;t)" data-standardid="~(stan4standardid;t)" data-stangraded="~(stan4graded;t)" data-stancomment="~(stan4comment;t)" data-excludefromreport="~(stan4exclude;t)">~(stan4name;t) - ~(stan4sub;t) - ~(stan4graded;t) - ~(stan4comment;t)</td>
-<td class="standard5" data-stanname="~(stan5name;t)" data-standesc="~(stan5desc;t)" data-stanid="~(stan5id;t)" data-stansub="~(stan5sub;t)" data-stansort="~(stan5so;t)" data-standardid="~(stan5standardid;t)" data-stangraded="~(stan5graded;t)" data-stancomment="~(stan5comment;t)" data-excludefromreport="~(stan5exclude;t)">~(stan5name;t) - ~(stan5sub;t) - ~(stan5graded;t) - ~(stan5comment;t)</td>
+<td class="standard1" data-stanname="~(stan1name;t)" data-standesc="~(stan1desc;t)" data-stanid="~(stan1id;t)" data-stansub="~(stan1sub;t)" data-stansort="~(stan1so;t)" data-standardid="~(stan1standardid;t)" data-stangraded="~(stan1graded;t)" data-stancomment="~(stan1comment;t)">~(stan1name;t) - ~(stan1sub;t) - ~(stan1graded;t) - ~(stan1comment;t)</td>
+<td class="standard2" data-stanname="~(stan2name;t)" data-standesc="~(stan2desc;t)" data-stanid="~(stan2id;t)" data-stansub="~(stan2sub;t)" data-stansort="~(stan2so;t)" data-standardid="~(stan2standardid;t)" data-stangraded="~(stan2graded;t)" data-stancomment="~(stan2comment;t)">~(stan2name;t) - ~(stan2sub;t) - ~(stan2graded;t) - ~(stan2comment;t)</td>
+<td class="standard3" data-stanname="~(stan3name;t)" data-standesc="~(stan3desc;t)" data-stanid="~(stan3id;t)" data-stansub="~(stan3sub;t)" data-stansort="~(stan3so;t)" data-standardid="~(stan3standardid;t)" data-stangraded="~(stan3graded;t)" data-stancomment="~(stan3comment;t)">~(stan3name;t) - ~(stan3sub;t) - ~(stan3graded;t) - ~(stan3comment;t)</td>
+<td class="standard4" data-stanname="~(stan4name;t)" data-standesc="~(stan4desc;t)" data-stanid="~(stan4id;t)" data-stansub="~(stan4sub;t)" data-stansort="~(stan4so;t)" data-standardid="~(stan4standardid;t)" data-stangraded="~(stan4graded;t)" data-stancomment="~(stan4comment;t)">~(stan4name;t) - ~(stan4sub;t) - ~(stan4graded;t) - ~(stan4comment;t)</td>
+<td class="standard5" data-stanname="~(stan5name;t)" data-standesc="~(stan5desc;t)" data-stanid="~(stan5id;t)" data-stansub="~(stan5sub;t)" data-stansort="~(stan5so;t)" data-standardid="~(stan5standardid;t)" data-stangraded="~(stan5graded;t)" data-stancomment="~(stan5comment;t)">~(stan5name;t) - ~(stan5sub;t) - ~(stan5graded;t) - ~(stan5comment;t)</td>
 <td class="ccinfo" data-sid="~(sid;l)" data-crsnum="~(crsnum;t)" data-sc="~(sc;t)" data-standardid="~(standardid;t)" data-sectionsdcid="~(sectionsdcid;t)" data-enddate="~(enddate;l)" data-crsname="~(crsName;t)" data-teacher="~(teacher;t)">~(crsnum;t) - ~(sc;t) - ~(enddate;l)</td>
 </tr>
 [/tlist_sql]
