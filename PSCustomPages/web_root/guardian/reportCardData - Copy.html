@@ -1,7 +1,7 @@
 ~[if#common.~(gpv.action)=common]
 
 [else#common]
-<div class="container ~(gpv.action)" style="width:100%" data-userid="~[x:userid]" data-sid="~(curstudid)" data-yid="~(gpv.yid;num)" data-sc="~(gpv.sc)" data-gr="~(gpv.gr;num)" data-frn="~(gpv.frn)">
+<div class="container ~(gpv.action)" style="width:100%" data-userid="~[x:userid]" data-sid="~(curstudid)" data-yid="~(gpv.yid)" data-sc="~(gpv.sc)" data-gr="~(gpv.gr)" data-frn="~(gpv.frn)">
 
 ~[if#trc.~(gpv.action)=trc]
 <table>
@@ -47,8 +47,8 @@ FROM Students s
     AND s.entrydate < tb.date2
     AND s.exitdate > tb.date1
 WHERE s.id = ~(curstudid)
-  AND replace(tb.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q')
-  AND tb.yearid = ~(gpv.yid;num)
+  AND replace(tb.storecode,'T','Q') = '~(gpv.sc)'
+  AND tb.yearid = ~(gpv.yid)
 UNION
 SELECT re.studentid, re.exitdate, tb.storecode, tb.yearid, tb.schoolid, tb.date1, tb.date2
 FROM ReEnrollments re
@@ -56,8 +56,8 @@ FROM ReEnrollments re
     AND re.entrydate < tb.date2
     AND re.exitdate > tb.date1
 WHERE re.studentid = ~(curstudid)
-  AND replace(tb.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q')
-  AND tb.yearid = ~(gpv.yid;num)
+  AND replace(tb.storecode,'T','Q') = '~(gpv.sc)'
+  AND tb.yearid = ~(gpv.yid)
 ORDER BY exitdate desc
 ), hr AS (
 SELECT t.last_name tchr, sec.room
@@ -90,7 +90,7 @@ WHERE rownum = 1]
 </tbody>
 </table>
 
-<table id="gradestable~(curstudid)~(gpv.yid;num)" class="grid gradestable" data-sid="~(curstudid)" data-yid="~(gpv.yid;num)" data-gr="~(gpv.gr;num)">
+<table id="gradestable~(curstudid)~(gpv.yid)" class="grid gradestable" data-sid="~(curstudid)" data-yid="~(gpv.yid)" data-gr="~(gpv.gr)">
 <colgroup>
     <col class="crsName">
     <col class="lvl">
@@ -135,25 +135,21 @@ SELECT
   sg.percent,
   sg.earnedcrhrs,
   sg.grade_level,
-  CASE WHEN replace(sg.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q') THEN to_char(sg.comment_value) END cmt,
+  CASE WHEN replace(sg.storecode,'T','Q') = '~(gpv.sc)' THEN to_char(sg.comment_value) END cmt,
   crs.powerlink lvl
 FROM StoredGrades sg
   INNER JOIN Terms ter ON sg.termid = ter.id AND sg.schoolid = ter.schoolid
-  LEFT JOIN Courses crs ON sg.course_number = crs.course_number
+  INNER JOIN Courses crs ON sg.course_number = crs.course_number
 WHERE sg.studentid = ~(curstudid)
-  AND substr(sg.termid,1,2) = '~(gpv.yid;num)'
+  AND substr(sg.termid,1,2) = '~(gpv.yid)'
   AND sg.grade is not null
   AND CASE 
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q1' AND sg.storecode IN ('Q1','T1') THEN 1
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q2' AND sg.storecode IN ('Q1','T1','Q2','T2','M1','S1') THEN 1
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q3' AND sg.storecode IN ('Q1','T1','Q2','T2','M1','S1','Q3','T3') THEN 1
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q4' AND sg.storecode IN ('Q1','T1','Q2','T2','M1','S1','Q3','T3','Q4','F1','S2') THEN 1
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q1' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 10 and 12 THEN 1
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q2' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 1 and 2 THEN 1
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q3' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 3 and 4 THEN 1
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q4' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 5 and 6 THEN 1
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q4' AND ~(gpv.gr;num) >= 9 AND sg.storecode = 'Y1' THEN 1
-    WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q3' AND ~(gpv.gr;num) >= 7 AND sg.storecode = 'Y1' THEN 1
+    WHEN '~(gpv.sc)' = 'Q1' AND (sg.storecode IN ('Q1','T1') or (sg.storecode = 'Y1' and ter.portion IN (3,4))) THEN 1
+    WHEN '~(gpv.sc)' = 'Q2' AND (sg.storecode IN ('Q1','T1','Q2','T2','M1','S1') or (sg.storecode = 'Y1' and ter.portion IN (3,4))) THEN 1
+    WHEN '~(gpv.sc)' = 'Q3' AND (sg.storecode IN ('Q1','T1','Q2','T2','M1','S1','Q3','T3') or (sg.storecode = 'Y1' and ter.portion IN (3,4))) THEN 1
+    WHEN '~(gpv.sc)' = 'Q4' AND sg.storecode IN ('Q1','T1','Q2','T2','M1','S1','Q3','T3','Q4','F1','S2') THEN 1
+    WHEN '~(gpv.sc)' = 'Q4' AND ~(gpv.gr) >= 9 AND sg.storecode = 'Y1' THEN 1
+    WHEN '~(gpv.sc)' = 'Q3' AND ~(gpv.gr) >= 7 AND sg.storecode = 'Y1' THEN 1
     ELSE 0
   END = 1
 ORDER BY sg.termid, sg.course_name
@@ -213,9 +209,9 @@ ORDER BY sg.course_name, sg.teacher_name;alternatecolor]
     <tbody>
     ~[tlist_sql;
     SELECT 
-      (select MAX(levelvalue) from honorroll where studentid = ~(curstudid) and yearid = ~(gpv.yid;num) and method = 'GMS Honor Roll T1') t1,
-      (select MAX(levelvalue) from honorroll where studentid = ~(curstudid) and yearid = ~(gpv.yid;num) and method = 'GMS Honor Roll T2') t2,
-      (select MAX(levelvalue) from honorroll where studentid = ~(curstudid) and yearid = ~(gpv.yid;num) and method = 'GMS Honor Roll T3') t3
+      (select MAX(levelvalue) from honorroll where studentid = ~(curstudid) and yearid = ~(gpv.yid) and method = 'GMS Honor Roll T1') t1,
+      (select MAX(levelvalue) from honorroll where studentid = ~(curstudid) and yearid = ~(gpv.yid) and method = 'GMS Honor Roll T2') t2,
+      (select MAX(levelvalue) from honorroll where studentid = ~(curstudid) and yearid = ~(gpv.yid) and method = 'GMS Honor Roll T3') t3
     FROM dual
     ]
     <tr>
@@ -240,8 +236,8 @@ ORDER BY sg.course_name, sg.teacher_name;alternatecolor]
         AND cd.date_value between tb.date1 and tb.date2
         AND cd.date_value between s.entrydate and s.exitdate-1
     WHERE s.id = ~(curstudid)
-      AND replace(tb.storecode,'T','Q') IN ('Q1'~[if#q2.~(gpv.sc;sqlText)=Q2],'Q2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'Q2'[/if#t2]~[if#t3.~(gpv.sc;sqlText)=T3],'Q2','Q3'[/if#t3]~[if#q3.~(gpv.sc;sqlText)=Q3],'Q2','Q3'[/if#q3]~[if#q4.~(gpv.sc;sqlText)=Q4],'Q2','Q3','Q4'[/if#q4])
-      AND tb.yearid = ~(gpv.yid;num)
+      AND tb.storecode IN ('Q1'~[if#t2.~(gpv.sc)=Q2],'Q2'[/if#t2]~[if#t3.~(gpv.sc)=Q3],'Q2','Q3'[/if#t3]~[if#t4.~(gpv.sc)=Q4],'Q2','Q3','Q4'[/if#t4])
+      AND tb.yearid = ~(gpv.yid)
       AND cd.date_value <= sysdate
     UNION
     SELECT re.studentid, tb.storecode sc, cd.date_value dt
@@ -253,12 +249,12 @@ ORDER BY sg.course_name, sg.teacher_name;alternatecolor]
         AND cd.date_value between tb.date1 and tb.date2
         AND cd.date_value between re.entrydate and re.exitdate-1
     WHERE re.studentid = ~(curstudid)
-        AND replace(tb.storecode,'T','Q') IN ('Q1'~[if#q2.~(gpv.sc;sqlText)=Q2],'Q2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'Q2'[/if#t2]~[if#t3.~(gpv.sc;sqlText)=T3],'Q2','Q3'[/if#t3]~[if#q3.~(gpv.sc;sqlText)=Q3],'Q2','Q3'[/if#q3]~[if#q4.~(gpv.sc;sqlText)=Q4],'Q2','Q3','Q4'[/if#q4])
-      AND tb.yearid = ~(gpv.yid;num)
+      AND tb.storecode IN ('Q1'~[if#t2.~(gpv.sc)=Q2],'Q2'[/if#t2]~[if#t3.~(gpv.sc)=Q3],'Q2','Q3'[/if#t3]~[if#t4.~(gpv.sc)=Q4],'Q2','Q3','Q4'[/if#t4])
+      AND tb.yearid = ~(gpv.yid)
       AND cd.date_value <= sysdate
     ORDER BY sc, dt
     ), att AS (
-    SELECT replace(s.sc,'T','Q') sc, s.dt, 
+    SELECT s.sc, s.dt, 
       CASE WHEN attc.presence_status_cd = 'Absent' THEN 1 ELSE 0 END a,
       nvl((SELECT 1 FROM Att_Code_Code_Entity acce INNER JOIN Code_Entity ce ON acce.code_entityid = ce.id AND ce.ce_code = 'Tardy' WHERE att.attendance_codeid = acce.attendance_codeid),0) t,
       nvl((SELECT 1 FROM Att_Code_Code_Entity acce INNER JOIN Code_Entity ce ON acce.code_entityid = ce.id AND ce.ce_code = 'Dismissed' WHERE att.attendance_codeid = acce.attendance_codeid),0) d
@@ -343,8 +339,8 @@ FROM Students s
     AND s.entrydate < tb.date2
     AND s.exitdate > tb.date1
 WHERE s.id = ~(curstudid)
-  AND replace(tb.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q')
-  AND tb.yearid = ~(gpv.yid;num)
+  AND tb.storecode = '~(gpv.sc)'
+  AND tb.yearid = ~(gpv.yid)
 UNION
 SELECT re.studentid, s.first_name || ' ' || s.last_name std, re.grade_level curgr, re.exitdate, tb.storecode, tb.yearid, tb.schoolid, tb.date1, tb.date2
 FROM Students s
@@ -353,18 +349,18 @@ FROM Students s
     AND re.entrydate < tb.date2
     AND re.exitdate > tb.date1
 WHERE re.studentid = ~(curstudid)
-  AND replace(tb.storecode,'T','Q') = replace('~(gpv.sc;sqlText)','T','Q')
-  AND tb.yearid = ~(gpv.yid;num)
+  AND tb.storecode = '~(gpv.sc)'
+  AND tb.yearid = ~(gpv.yid)
 ORDER BY exitdate desc
 ), n AS (
-SELECT s.id studentid, CASE WHEN ~(gpv.yid;num) = ~(curyearid) THEN s.sched_nextyeargrade ELSE s.grade_level END nyg, s.entrydate
+SELECT s.id studentid, CASE WHEN ~(gpv.yid) = ~(curyearid) THEN s.sched_nextyeargrade ELSE s.grade_level END nyg, s.entrydate
 FROM Students s
   INNER JOIN terms ter ON s.enrollment_schoolid = ter.schoolid
     AND s.entrydate < ter.lastday
     AND s.exitdate > ter.firstday
     AND ter.isyearrec = 1
 WHERE s.id = ~(curstudid)
-  AND ter.yearid IN (~(gpv.yid;num),~(gpv.yid;num)+1)
+  AND ter.yearid IN (~(gpv.yid),~(gpv.yid)+1)
 UNION
 SELECT re.studentid, re.grade_level nyg, re.entrydate
 FROM Students s
@@ -373,7 +369,7 @@ FROM Students s
     AND re.entrydate < tb.date2
     AND re.exitdate > tb.date1
 WHERE re.studentid = ~(curstudid)
-  AND tb.yearid = ~(gpv.yid;num)+1
+  AND tb.yearid = ~(gpv.yid)+1
 ORDER BY entrydate
 ), hr AS (
 SELECT t.first_name || ' ' || t.last_name tchr, sec.room, crs.course_name
@@ -391,14 +387,14 @@ SELECT
   s.schoolid,
   sch.name school,
   sch.schoolcity town,
-  CASE WHEN ~(gpv.gr;num) = 0 THEN 'Kindergarten' ELSE 'Grade ' || to_char(~(gpv.gr;num)) END gr,
+  CASE WHEN ~(gpv.gr) = 0 THEN 'Kindergarten' ELSE 'Grade ' || to_char(~(gpv.gr)) END gr,
   sch.principal,
   sch.asstprincipal,
   s.std,
-  (1990+~(gpv.yid;num))||'-'||(1991+~(gpv.yid;num)) yr,
+  (1990+~(gpv.yid))||'-'||(1991+~(gpv.yid)) yr,
   (select tchr from hr where rownum = 1) tchr,
   CASE 
-    WHEN ~(gpv.yid;num) > ~(curyearid) THEN 'future year'
+    WHEN ~(gpv.yid) > ~(curyearid) THEN 'future year'
     WHEN n.nyg > s.curgr THEN 'Student has been promoted to grade ' || n.nyg
     WHEN n.nyg = s.curgr THEN 'Student has been retained in grade ' || n.nyg
     WHEN n.nyg < s.curgr THEN 'Student has been demoted to grade ' || n.nyg
@@ -452,7 +448,7 @@ FROM (select * from s where rownum = 1) s
 <tbody>
 <tr>
 <td>
-~[if#k2.~(gpv.gr;num)<=3]
+~[if#k2.~(gpv.gr)<=3]
 	~[tlist_sql;
 	WITH s AS (
 	SELECT s.id studentid, tb.storecode sc, cd.date_value dt
@@ -464,8 +460,8 @@ FROM (select * from s where rownum = 1) s
 	    AND cd.date_value between tb.date1 and tb.date2
 	    AND cd.date_value between s.entrydate and s.exitdate-1
 	WHERE s.id = ~(curstudid)
-	  AND replace(tb.storecode,'T','Q') IN ('Q1'~[if#q2.~(gpv.sc;sqlText)=Q2],'Q2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'Q2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'Q2','Q3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'Q2','Q3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'Q2','Q3'[/if#q4])
-	  AND tb.yearid = ~(gpv.yid;num)
+	  AND tb.storecode IN ('T1'~[if#t2.~(gpv.sc)=Q2],'T2'[/if#t2]~[if#t3.~(gpv.sc)=Q3],'T2','T3'[/if#t3]~[if#t4.~(gpv.sc)=Q4],'T2','T3'[/if#t4])
+	  AND tb.yearid = ~(gpv.yid)
 	  AND cd.date_value <= sysdate
 	UNION
 	SELECT re.studentid, tb.storecode sc, cd.date_value dt
@@ -477,12 +473,12 @@ FROM (select * from s where rownum = 1) s
 	    AND cd.date_value between tb.date1 and tb.date2
 	    AND cd.date_value between re.entrydate and re.exitdate-1
 	WHERE re.studentid = ~(curstudid)
-	  AND replace(tb.storecode,'T','Q') IN ('Q1'~[if#q2.~(gpv.sc;sqlText)=Q2],'Q2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'Q2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'Q2','Q3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'Q2','Q3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'Q2','Q3'[/if#q4])
-	  AND tb.yearid = ~(gpv.yid;num)
+	  AND tb.storecode IN ('T1'~[if#t2.~(gpv.sc)=Q2],'T2'[/if#t2]~[if#t3.~(gpv.sc)=Q3],'T2','T3'[/if#t3]~[if#t4.~(gpv.sc)=Q4],'T2','T3'[/if#t4])
+	  AND tb.yearid = ~(gpv.yid)
 	  AND cd.date_value <= sysdate
 	ORDER BY sc, dt
 	), att AS (
-	SELECT replace(s.sc,'Q','T') sc, s.dt, 
+	SELECT s.sc, s.dt, 
 	  CASE WHEN attc.presence_status_cd = 'Absent' THEN 1 ELSE 0 END a,
 	  nvl((SELECT 1 FROM Att_Code_Code_Entity acce INNER JOIN Code_Entity ce ON acce.code_entityid = ce.id AND ce.ce_code = 'Tardy' WHERE att.attendance_codeid = acce.attendance_codeid),0) t,
 	  nvl((SELECT 1 FROM Att_Code_Code_Entity acce INNER JOIN Code_Entity ce ON acce.code_entityid = ce.id AND ce.ce_code = 'Dismissed' WHERE att.attendance_codeid = acce.attendance_codeid),0) d
@@ -675,15 +671,15 @@ FROM cc
   INNER JOIN Courses crs ON UPPER(cc.course_number) = UPPER(crs.course_number)
   INNER JOIN Standards stan ON ',' || stan.courses || ',' LIKE '%,' || sec.course_number || ',%'
 WHERE cc.studentid = ~(curstudid)
-  AND tb.yearid = ~(gpv.yid;num)
-  AND tb.storecode IN ('T1'~[if#q2.~(gpv.sc;sqlText)=Q2],'T2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'T2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'T2','T3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'T2','T3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'T2','T3'[/if#q4])
+  AND tb.yearid = ~(gpv.yid)
+  AND tb.storecode IN ('T1'~[if#q2.~(gpv.sc)=Q2],'T2'[/if#q2]~[if#q3.~(gpv.sc)=Q3],'T2','T3'[/if#q3]~[if#q4.~(gpv.sc)=Q4],'T2','T3'[/if#q4])
 ), stan AS (
 SELECT 
   stan1.name stan1Name, stan1.description stan1Desc, stan1.identifier stan1id, stan1.subjectarea stan1sub, stan1.sortorder stan1so, stan1.id stan1standardid, stan1.allowassignments stan1graded, stan1.includecomment stan1comment, stan1.levelvalue stan1lvl, 0 stan1exclude,
-  stan2.name stan2Name, stan2.description stan2Desc, stan2.identifier stan2id, stan2.subjectarea stan2sub, stan2.sortorder stan2so, stan2.id stan2standardid, stan2.allowassignments stan2graded, stan2.includecomment stan2comment, stan2.levelvalue stan2lvl, stan2.unused1 stan2exclude,
-  stan3.name stan3Name, stan3.description stan3Desc, stan3.identifier stan3id, stan3.subjectarea stan3sub, stan3.sortorder stan3so, stan3.id stan3standardid, stan3.allowassignments stan3graded, stan3.includecomment stan3comment, stan3.levelvalue stan3lvl, stan3.unused1 stan3exclude,
-  stan4.name stan4Name, stan4.description stan4Desc, stan4.identifier stan4id, stan4.subjectarea stan4sub, stan4.sortorder stan4so, stan4.id stan4standardid, stan4.allowassignments stan4graded, stan4.includecomment stan4comment, stan4.levelvalue stan4lvl, stan4.unused1 stan4exclude,
-  stan5.name stan5Name, stan5.description stan5Desc, stan5.identifier stan5id, stan5.subjectarea stan5sub, stan5.sortorder stan5so, stan5.id stan5standardid, stan5.allowassignments stan5graded, stan5.includecomment stan5comment, stan5.levelvalue stan5lvl, stan5.unused1 stan5exclude
+  stan2.name stan2Name, stan2.description stan2Desc, stan2.identifier stan2id, stan2.subjectarea stan2sub, stan2.sortorder stan2so, stan2.id stan2standardid, stan2.allowassignments stan2graded, stan2.includecomment stan2comment, stan2.levelvalue stan2lvl, --stan2.unused1 stan2exclude,
+  stan3.name stan3Name, stan3.description stan3Desc, stan3.identifier stan3id, stan3.subjectarea stan3sub, stan3.sortorder stan3so, stan3.id stan3standardid, stan3.allowassignments stan3graded, stan3.includecomment stan3comment, stan3.levelvalue stan3lvl, --stan3.unused1 stan3exclude,
+  stan4.name stan4Name, stan4.description stan4Desc, stan4.identifier stan4id, stan4.subjectarea stan4sub, stan4.sortorder stan4so, stan4.id stan4standardid, stan4.allowassignments stan4graded, stan4.includecomment stan4comment, stan4.levelvalue stan4lvl, --stan4.unused1 stan4exclude,
+  stan5.name stan5Name, stan5.description stan5Desc, stan5.identifier stan5id, stan5.subjectarea stan5sub, stan5.sortorder stan5so, stan5.id stan5standardid, stan5.allowassignments stan5graded, stan5.includecomment stan5comment, stan5.levelvalue stan5lvl--, stan5.unused1 stan5exclude
 FROM Standards stan1
   INNER JOIN Standards stan2 ON stan1.identifier = stan2.listparent
   LEFT JOIN Standards stan3 ON stan2.identifier = stan3.listparent
@@ -692,22 +688,22 @@ FROM Standards stan1
 WHERE stan1.listparent is null
 )
 SELECT 
-  stan.stan1Name, stan.stan1Desc, stan.stan1id, stan.stan1sub, stan.stan1so, stan.stan1standardid, stan.stan1graded, stan.stan1comment, stan.stan1exclude,
-  stan.stan2Name, stan.stan2Desc, stan.stan2id, stan.stan2sub, stan.stan2so, stan.stan2standardid, stan.stan2graded, stan.stan2comment, stan.stan2exclude,
-  stan.stan3Name, stan.stan3Desc, stan.stan3id, stan.stan3sub, stan.stan3so, stan.stan3standardid, stan.stan3graded, stan.stan3comment, stan.stan3exclude,
-  stan.stan4Name, stan.stan4Desc, stan.stan4id, stan.stan4sub, stan.stan4so, stan.stan4standardid, stan.stan4graded, stan.stan4comment, stan.stan4exclude,
-  stan.stan5Name, stan.stan5Desc, stan.stan5id, stan.stan5sub, stan.stan5so, stan.stan5standardid, stan.stan5graded, stan.stan5comment, stan.stan5exclude,
+  stan.stan1Name, stan.stan1Desc, stan.stan1id, stan.stan1sub, stan.stan1so, stan.stan1standardid, stan.stan1graded, stan.stan1comment, --stan.stan1exclude,
+  stan.stan2Name, stan.stan2Desc, stan.stan2id, stan.stan2sub, stan.stan2so, stan.stan2standardid, stan.stan2graded, stan.stan2comment, --stan.stan2exclude,
+  stan.stan3Name, stan.stan3Desc, stan.stan3id, stan.stan3sub, stan.stan3so, stan.stan3standardid, stan.stan3graded, stan.stan3comment, --stan.stan3exclude,
+  stan.stan4Name, stan.stan4Desc, stan.stan4id, stan.stan4sub, stan.stan4so, stan.stan4standardid, stan.stan4graded, stan.stan4comment, --stan.stan4exclude,
+  stan.stan5Name, stan.stan5Desc, stan.stan5id, stan.stan5sub, stan.stan5so, stan.stan5standardid, stan.stan5graded, stan.stan5comment, --stan.stan5exclude,
   stdStan.studentid, stdStan.course_number, stdStan.storecode, stdStan.standardid, stdStan.sectionsdcid, stdStan.endDate, stdStan.course_name, stdStan.tchr
 FROM stan
   INNER JOIN stdStan ON nvl(nvl(nvl(nvl(stan.stan5standardid,stan.stan4standardid),stan.stan3standardid),stan.stan2standardid),stan.stan1standardid) = stdStan.standardid
 ORDER BY stan1so, stan1Name, stan2so, stan2Name, stan3so, stan3Name, stan4so, stan4Name, stan5so, stan5Name, stdStan.course_number, stdStan.storecode desc, stdStan.endDate desc
 ]
 <tr>
-<td class="standard1" data-stanname="~(stan1name;t)" data-standesc="~(stan1desc;t)" data-stanid="~(stan1id;t)" data-stansub="~(stan1sub;t)" data-stansort="~(stan1so;t)" data-standardid="~(stan1standardid;t)" data-stangraded="~(stan1graded;t)" data-stancomment="~(stan1comment;t)" data-excludefromreport="~(stan1exclude;t)">~(stan1name;t) - ~(stan1sub;t) - ~(stan1graded;t) - ~(stan1comment;t)</td>
-<td class="standard2" data-stanname="~(stan2name;t)" data-standesc="~(stan2desc;t)" data-stanid="~(stan2id;t)" data-stansub="~(stan2sub;t)" data-stansort="~(stan2so;t)" data-standardid="~(stan2standardid;t)" data-stangraded="~(stan2graded;t)" data-stancomment="~(stan2comment;t)" data-excludefromreport="~(stan2exclude;t)">~(stan2name;t) - ~(stan2sub;t) - ~(stan2graded;t) - ~(stan2comment;t)</td>
-<td class="standard3" data-stanname="~(stan3name;t)" data-standesc="~(stan3desc;t)" data-stanid="~(stan3id;t)" data-stansub="~(stan3sub;t)" data-stansort="~(stan3so;t)" data-standardid="~(stan3standardid;t)" data-stangraded="~(stan3graded;t)" data-stancomment="~(stan3comment;t)" data-excludefromreport="~(stan3exclude;t)">~(stan3name;t) - ~(stan3sub;t) - ~(stan3graded;t) - ~(stan3comment;t)</td>
-<td class="standard4" data-stanname="~(stan4name;t)" data-standesc="~(stan4desc;t)" data-stanid="~(stan4id;t)" data-stansub="~(stan4sub;t)" data-stansort="~(stan4so;t)" data-standardid="~(stan4standardid;t)" data-stangraded="~(stan4graded;t)" data-stancomment="~(stan4comment;t)" data-excludefromreport="~(stan4exclude;t)">~(stan4name;t) - ~(stan4sub;t) - ~(stan4graded;t) - ~(stan4comment;t)</td>
-<td class="standard5" data-stanname="~(stan5name;t)" data-standesc="~(stan5desc;t)" data-stanid="~(stan5id;t)" data-stansub="~(stan5sub;t)" data-stansort="~(stan5so;t)" data-standardid="~(stan5standardid;t)" data-stangraded="~(stan5graded;t)" data-stancomment="~(stan5comment;t)" data-excludefromreport="~(stan5exclude;t)">~(stan5name;t) - ~(stan5sub;t) - ~(stan5graded;t) - ~(stan5comment;t)</td>
+<td class="standard1" data-stanname="~(stan1name;t)" data-standesc="~(stan1desc;t)" data-stanid="~(stan1id;t)" data-stansub="~(stan1sub;t)" data-stansort="~(stan1so;t)" data-standardid="~(stan1standardid;t)" data-stangraded="~(stan1graded;t)" data-stancomment="~(stan1comment;t)">~(stan1name;t) - ~(stan1sub;t) - ~(stan1graded;t) - ~(stan1comment;t)</td>
+<td class="standard2" data-stanname="~(stan2name;t)" data-standesc="~(stan2desc;t)" data-stanid="~(stan2id;t)" data-stansub="~(stan2sub;t)" data-stansort="~(stan2so;t)" data-standardid="~(stan2standardid;t)" data-stangraded="~(stan2graded;t)" data-stancomment="~(stan2comment;t)">~(stan2name;t) - ~(stan2sub;t) - ~(stan2graded;t) - ~(stan2comment;t)</td>
+<td class="standard3" data-stanname="~(stan3name;t)" data-standesc="~(stan3desc;t)" data-stanid="~(stan3id;t)" data-stansub="~(stan3sub;t)" data-stansort="~(stan3so;t)" data-standardid="~(stan3standardid;t)" data-stangraded="~(stan3graded;t)" data-stancomment="~(stan3comment;t)">~(stan3name;t) - ~(stan3sub;t) - ~(stan3graded;t) - ~(stan3comment;t)</td>
+<td class="standard4" data-stanname="~(stan4name;t)" data-standesc="~(stan4desc;t)" data-stanid="~(stan4id;t)" data-stansub="~(stan4sub;t)" data-stansort="~(stan4so;t)" data-standardid="~(stan4standardid;t)" data-stangraded="~(stan4graded;t)" data-stancomment="~(stan4comment;t)">~(stan4name;t) - ~(stan4sub;t) - ~(stan4graded;t) - ~(stan4comment;t)</td>
+<td class="standard5" data-stanname="~(stan5name;t)" data-standesc="~(stan5desc;t)" data-stanid="~(stan5id;t)" data-stansub="~(stan5sub;t)" data-stansort="~(stan5so;t)" data-standardid="~(stan5standardid;t)" data-stangraded="~(stan5graded;t)" data-stancomment="~(stan5comment;t)">~(stan5name;t) - ~(stan5sub;t) - ~(stan5graded;t) - ~(stan5comment;t)</td>
 <td class="ccinfo" data-sid="~(sid;l)" data-crsnum="~(crsnum;t)" data-sc="~(sc;t)" data-standardid="~(standardid;t)" data-sectionsdcid="~(sectionsdcid;t)" data-enddate="~(enddate;l)" data-crsname="~(crsName;t)" data-teacher="~(teacher;t)">~(crsnum;t) - ~(sc;t) - ~(enddate;l)</td>
 </tr>
 [/tlist_sql]
@@ -736,8 +732,8 @@ FROM Students s
   	AND sec.id = abs(cc.sectionid)
 WHERE s.id = ~(curstudid)
   AND sg.transaveragescore is not null
-  AND sg.storecode IN ('T1'~[if#q2.~(gpv.sc;sqlText)=Q2],'T2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'T2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'T2','T3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'T2','T3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'T2','T3'[/if#q4])
-  AND sg.yearid = ~(gpv.yid;num)
+  AND sg.storecode IN ('T1'~[if#q2.~(gpv.sc)=Q2],'T2'[/if#q2]~[if#q3.~(gpv.sc)=Q3],'T2','T3'[/if#q3]~[if#q4.~(gpv.sc)=Q4],'T2','T3'[/if#q4])
+  AND sg.yearid = ~(gpv.yid)
 ]
 <tr>
 <td class="standardid" data-standardid="~(standardid;l)">~(standardid;l)</td>
@@ -774,8 +770,8 @@ FROM Students s
 WHERE s.id = ~(curstudid)
   AND stan.includecomment = 1
   AND sec.termid LIKE to_char(sg.yearid)||'__'
-  AND sg.storecode IN ('T1'~[if#q2.~(gpv.sc;sqlText)=Q2],'T2'[/if#q2]~[if#t2.~(gpv.sc;sqlText)=T2],'T2'[/if#t2]~[if#q3.~(gpv.sc;sqlText)=Q3],'T2','T3'[/if#q3]~[if#t3.~(gpv.sc;sqlText)=T3],'T2','T3'[/if#t3]~[if#q4.~(gpv.sc;sqlText)=Q4],'T2','T3'[/if#q4])
-  AND sg.yearid = ~(gpv.yid;num)
+  AND sg.storecode IN ('T1'~[if#q2.~(gpv.sc)=Q2],'T2'[/if#q2]~[if#q3.~(gpv.sc)=Q3],'T2','T3'[/if#q3]~[if#q4.~(gpv.sc)=Q4],'T2','T3'[/if#q4])
+  AND sg.yearid = ~(gpv.yid)
 ORDER BY standardid, schoolsdcid, sectionid, storecode
 ]
 <tr>
