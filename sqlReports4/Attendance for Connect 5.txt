@@ -13,7 +13,7 @@ FROM (
 	INNER JOIN Attendance_Code attc ON att.attendance_codeID = attc.ID
 	WHERE att.att_date = trunc(sysdate)
 	  AND att.att_mode_code = 'ATT_ModeDaily'
-	  AND attc.att_code is not null
+	  AND attc.att_code = 'AU'
 	  AND att.schoolID LIKE CASE WHEN ~(curschoolid) = 0 THEN '%' ELSE to_char(~(curschoolid)) END
 	)t
   INNER JOIN Students s ON t.studentID = s.ID
