@@ -9,7 +9,7 @@
 <!-- title -->
 
 <!-- start student content -->
-<form action="enroll.html?schedulerequestyearid=2600" method="POST">
+<form action="enroll.html?schedulerequestyearid=~(curyearid)" method="POST">
 <div class="box-round group">
 
 <table border="0" cellspacing="0" cellpadding="4" name="constraints">
@@ -62,6 +62,8 @@ and
     schedulesections.buildid = schedulecc.buildid
 and
     schedulecc.studentid = ~(curstudid)
+and
+    ~(curschoolid) = 3210505
 and
     schedulecc.buildid = ~[x:scheduleinfo;curbuildid]
 order by
