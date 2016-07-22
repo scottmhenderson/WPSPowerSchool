@@ -1,0 +1,11 @@
+<style type="text/css">
+#btn-psched_schedule a {background: url(/images/img/iconMySchedule.png) no-repeat;}
+
+</style>
+<script type="text/javascript">
+$j(document).ready(function(){
+	var l = $j('div#nav-main > ul');
+	~[if.~(curschoolid)=3210505]l.find('li#btn-gradesAttendance').after('<li id="btn-psched_schedule"><a href="/guardian/powerscheduler_schedule.html">2016-17 Schedule</a></li>');[/if]
+
+});
+</script>

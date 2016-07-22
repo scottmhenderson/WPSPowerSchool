@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>2016-17 Schedule</title>
+
+~[wc:guardian_header]
+
+<h1>2016-17 Student Schedule: ~(studentname)</h1>
+<!-- title -->
+
+<!-- start student content -->
+<form action="enroll.html?schedulerequestyearid=2600" method="POST">
+<div class="box-round group">
+
+<table border="0" cellspacing="0" cellpadding="4" name="constraints">
+
+<tr bgcolor="#f6f6f6">
+<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.exp]</td>
+<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.trm]</td>
+<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.crssec]</td>
+<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.course_name]</td>
+<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.teacher]</td>
+<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.room]</td>
+</tr>
+
+~[tlist_sql; 
+select 
+    schedulecc.expression,
+    schedulecc.termid,
+    scheduleterms.abbreviation,
+    schedulecc.dcid,
+    schedulecc.course_number,
+    schedulecc.section_number,
+    schedulecoursecatalogs.course_name,
+    teachers.lastFirst,
+    schedulesections.room
+from
+    schedulecc
+        left outer join teachers
+        on teachers.ID = schedulecc.teacherid,
+
+    schedulesections
+        left outer join schedulecoursecatalogs
+        on schedulecoursecatalogs.course_number = schedulesections.course_number,
+	
+	schedulebuilds,
+
+    scheduleterms
+where
+	schedulebuilds.coursecatalogid = schedulecoursecatalogs.coursecatalogid
+and
+	schedulebuilds.buildid = schedulecc.buildid
+and
+    scheduleterms.schoolID = schedulecc.schoolID
+and
+    scheduleterms.ID = schedulecc.termID
+and
+    schedulesections.section_number = schedulecc.section_number
+and
+    schedulesections.course_number = schedulecc.course_number
+and
+    schedulesections.buildid = schedulecc.buildid
+and
+    schedulecc.studentid = ~(curstudid)
+and
+    schedulecc.buildid = ~[x:scheduleinfo;curbuildid]
+order by
+    schedulecc.expression,
+    schedulecc.termid
+	;alternatecolor]
+
+<tr align="center" bgcolor="#edf3fe">
+<td align="left">~(schedulecc.expression;t) <!-- ~(schedulecc.termid;l) --></td>
+<td align="left">~(scheduleterms.abbreviation;t) <!-- ~(schedulecc.dcid;l) --></td>
+<td align="left">~(schedulecc.course_number;t)-~(schedulecc.section_number;l)</td>
+<td align="left">~(courses.course_name;codemap=CourseName;id=~(schedulecc.course_number);t)</td>
+<td align="left">~(teachers.lastFirst;t)</td>
+<td align="left">~(schedulesections.room;t)</td>
+</tr>
+[/tlist_sql]
+
+</table>
+</div>
+</form>
+<!-- end student content -->
+
+<!-- end of title and student content -->
+
+~[wc:guardian_footer]
+</body>
+</html>
