@@ -15,14 +15,16 @@
 <table border="0" cellspacing="0" cellpadding="4" name="constraints">
 
 <tr bgcolor="#f6f6f6">
-<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.exp]</td>
-<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.trm]</td>
-<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.crssec]</td>
-<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.course_name]</td>
-<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.teacher]</td>
-<td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.room]</td>
+<td class="bold">Period</td>
+<td class="bold">Term</td>
+<td class="bold">Course Number-Section</td>
+<td class="bold">Course Name</td>
+<!-- <td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.teacher]</td> -->
+<!-- <td class="bold">~[text:psx.html.admin_powerschedule_students.schedule.room]</td> -->
 </tr>
 
+<!--     teachers.lastFirst, -->
+<!--    schedulesections.room -->
 ~[tlist_sql; 
 select 
     schedulecc.expression,
@@ -31,9 +33,7 @@ select
     schedulecc.dcid,
     schedulecc.course_number,
     schedulecc.section_number,
-    schedulecoursecatalogs.course_name,
-    teachers.lastFirst,
-    schedulesections.room
+    schedulecoursecatalogs.course_name
 from
     schedulecc
         left outer join teachers
@@ -63,9 +63,9 @@ and
 and
     schedulecc.studentid = ~(curstudid)
 and
-    ~(curschoolid) = 3210505
+    (~(curschoolid) = 3210505 or ~(curschoolid) = 3210305)
 and
-    schedulecc.buildid = ~[x:scheduleinfo;curbuildid]
+    schedulecc.buildid = 151
 order by
     schedulecc.expression,
     schedulecc.termid
@@ -76,10 +76,11 @@ order by
 <td align="left">~(scheduleterms.abbreviation;t) <!-- ~(schedulecc.dcid;l) --></td>
 <td align="left">~(schedulecc.course_number;t)-~(schedulecc.section_number;l)</td>
 <td align="left">~(courses.course_name;codemap=CourseName;id=~(schedulecc.course_number);t)</td>
-<td align="left">~(teachers.lastFirst;t)</td>
-<td align="left">~(schedulesections.room;t)</td>
 </tr>
 [/tlist_sql]
+
+<!-- <td align="left">~(teachers.lastFirst;t)</td> -->
+<!-- <td align="left">~(schedulesections.room;t)</td> -->
 
 </table>
 </div>

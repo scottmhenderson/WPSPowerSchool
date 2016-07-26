@@ -5,7 +5,14 @@
 <script type="text/javascript">
 $j(document).ready(function(){
 	var l = $j('div#nav-main > ul');
-	~[if.~(curschoolid)=3210505]l.find('li#btn-gradesAttendance').after('<li id="btn-psched_schedule"><a href="/guardian/powerscheduler_schedule.html">2016-17 Schedule</a></li>');[/if]
+	~[if#whs.~(curschoolid)=3210505]
+            l.find('li#btn-gradesAttendance').after('<li id="btn-psched_schedule"><a href="/guardian/powerscheduler_schedule.html">2016-17 Schedule</a></li>');
+        [/if#whs]
 
+        ~[if#gms.~(curschoolid)=3210305]
+            ~[if#eighth.~([students]grade_level)=8]
+                l.find('li#btn-gradesAttendance').after('<li id="btn-psched_schedule"><a href="/guardian/powerscheduler_schedule.html">2016-17 Schedule</a></li>');
+            [/if#eighth]
+        [/if#gms]
 });
 </script>
