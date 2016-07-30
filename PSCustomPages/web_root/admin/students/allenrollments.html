@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<!-- start right frame -->
+<head>
+<title>~[text:psx.html.admin_students.allenrollments.all_enrollments]</title>
+~[wc:commonscripts]
+<link href="/images/css/screen.css" rel="stylesheet" media="screen">
+<link href="/images/css/print.css" rel="stylesheet" media="print">
+</head>
+<body>
+~[SetPostValue:skipDontPrintFilter=1]
+
+~[wc:admin_header_frame_css]<!-- breadcrumb start --><a href="/admin/home.html" target="_top">~[text:psx.html.admin_students.allenrollments.start_page]</a> &gt; <a href="home.html?selectstudent=nosearch" target="_top">~[text:psx.html.admin_students.allenrollments.student_selection]</a> &gt;~[text:psx.html.admin_students.allenrollments.all_enrollments1]<!-- breadcrumb end -->~[wc:admin_navigation_frame_css]
+
+~[wc:title_student_begin_css]~[text:psx.html.admin_students.allenrollments.all_enrollments2]~[wc:title_student_end_css]
+
+<!-- start of content and bounding box -->
+<div class="box-round">
+
+    <table class="tableToGrid" border="0" cellspacing="0" cellpadding="4" > 
+        <thead> 
+            <tr bgcolor="#f6f6f6"> 
+                <th class="bold" data-sorttype="date" data-sortorder="desc">~[text:psx.html.admin_students.allenrollments.entered]</th> 
+                <th class="bold" data-sorttype="date">~[text:psx.html.admin_students.allenrollments.exited]</th> 
+                <th class="bold">~[text:psx.html.admin_students.allenrollments.exp]</th> 
+                <th class="bold">~[text:psx.html.admin_students.allenrollments.course]</th> 
+                <th class="bold">~[text:psx.html.admin_students.allenrollments.teacher]</th> 
+                <th class="bold" data-sortable="false">~[text:psx.html.admin_students.allenrollments.view]</th> 
+                <th class="bold" data-sortable="false">~[text:psx.html.admin_students.allenrollments.edit]</th> 
+            </tr> 
+        </thead> 
+        <tbody> 
+            <tr bgcolor="#edf3fe"> 
+                <td>[dateenrolled]</td> 
+                <td>[dateleft]</td> 
+                <td>[classexpression]</td> 
+                <td>[coursename]</td> 
+                <td>[teachername]</td> 
+                <td><a href="scores.html?frn=[frn]">~[text:psx.html.admin_students.allenrollments.view1]</a></td> 
+                <td><a href="editcc.html?frn=[frn]&breadcrumb=true">~[text:psx.html.admin_students.allenrollments.edit1]</a></td> 
+            </tr> 
+            ~[x:ENR_AllEnrollmentsView] 
+        </tbody> 
+    </table> 
+	
+~[if.CheckDupCC_Failed]
+<p class="feedback-alert">~[text:psx.html.admin_students.allenrollments.this_student_has_multiple_overlapping_enrollments_in_a_singl]<a href="tech/cleanDupCCs.html">~[text:psx.html.admin_students.allenrollments.clean_up_overlapping_enrollments]</a>.</p>
+[/if.CheckDupCC_Failed]
+
+
+<div class="button-row"></div>
+</div>
+
+<!-- end of content of bounding box -->
+
+~[wc:admin_footer_frame_css]
+
+</body>
+</html><!-- end right frame -->
