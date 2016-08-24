@@ -1,0 +1,27 @@
+<script type="text/javascript">
+$j(document).ready(function(){ 
+	if ( $j('a[href*="generaldemographics.html"]').length > 0 ) { insertLink('ELL','ell.html?frn=~(studentfrn)','std_information'); }
+});
+
+function insertLink(l,href,sec) {
+	var inserted = false;
+	$j('ul#'+sec+' li a').each(function(){
+		if (l < $j(this).html()) {
+			$j(this).parent().before(
+				'<!-- BEGIN link for '+l+' -->\
+				<li><a href="'+href+'">'+l+'</a></li>\
+				<!-- END link for '+l+' -->'
+			);
+			inserted = true;
+			return false;
+		}
+	});
+	if (!inserted) {
+		$j('ul#'+sec+' a').parent().last().after(
+			'<!-- BEGIN link for '+l+' -->\
+			<li><a href="'+href+'">'+l+'</a></li>\
+			<!-- END link for '+l+' -->'
+		);
+	};
+}
+</script>
