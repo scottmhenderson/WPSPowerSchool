@@ -1,0 +1,17 @@
+<style type="text/css">
+#btn-keyinfo a {background: url(/images/img/keyblue4.png) no-repeat;}
+
+</style>
+<script type="text/javascript">
+$j(document).ready(function(){
+	var l = $j('div#nav-main > ul');
+
+        ~[if.~(curschoolid)=3210505]
+            l.find('li#btn-gradesAttendance').before('<li id="btn-keyinfo"><a href="/guardian/keyInfo.html">Key Information</a></li>');
+        [/if]
+        ~[if.~(curschoolid)=3210305]
+            l.find('li#btn-gradesAttendance').before('<li id="btn-keyinfo"><a href="/guardian/keyInfo.html">Key Information</a></li>');
+        [/if]
+
+});
+</script>

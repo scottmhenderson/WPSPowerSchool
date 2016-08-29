@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><plugin xmlns="http://plugin.powerschool.pearson.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" description="Access to student ELL-related fields" name="ELL Student Screen" version="1.0" xsi:schemaLocation="http://plugin.powerschool.pearson.com plugin.xsd">
+<?xml version="1.0" encoding="UTF-8"?><plugin xmlns="http://plugin.powerschool.pearson.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" description="Key Information page in parent/student portal" name="Public Portal Key Info" version="1.0" xsi:schemaLocation="http://plugin.powerschool.pearson.com plugin.xsd">
 <publisher name="Scott Henderson">
 <contact email="hendersons@westboroughk12.org"/>
 </publisher>

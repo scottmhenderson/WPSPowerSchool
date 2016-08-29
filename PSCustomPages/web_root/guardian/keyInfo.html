@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Key Information</title>
+
+~[wc:guardian_header]
+
+<h1>Key Information: ~(studentname)</h1>
+
+<script type="text/javascript">
+    $j(document).ready(function() {
+        //~[if#mps.~(curschoolid)=3210045]
+        
+        if( (~([Students]schoolid) == 3210305) || (~([Students]schoolid) == 3210505) ) {
+            $j('#lockertable').show();
+        } else {
+            $j('#lockertable').hide();
+        }
+
+        if( ~([Students]schoolid) == 3210305 ) {
+            $j('#teamtable').show();
+        } else {
+            $j('#teamtable').hide();
+        }
+
+    });
+</script>
+
+<!-- title -->
+<body>
+<!-- start student content -->
+<div class="box-round group">
+
+<!-- remove class=grid when done with the grid lines -->
+<table id=teamtable class="grid" border="0" cellspacing="0" cellpadding="4">
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">Team</td>
+</tr>
+<tr id=teamrow>
+<td class="bold">~[text:psx.html.admin_students.modifydata.current_team]</td>
+<td>~([Students]Team)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.modifydata.home_room]</td>
+<td>~([Students]home_room)</td>
+</tr>
+</table>
+<br>
+<table id=lockertable class="grid" border="0" cellspacing="0" cellpadding="4">
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">Locker</td>
+<tr id=lockernumrow>
+<td class="bold">~[text:psx.html.admin_students.modifydata.locker_number]</td>
+<td>~([Students]locker_number)</td>
+</tr>
+<tr id=lockercomborow>
+<td class="bold">~[text:psx.html.admin_students.modifydata.locker_combination]</td>
+<td>~([Students]locker_combination)</td>
+</tr>
+
+</table>
+
+</div>
+
+<!-- end student content -->
+
+<!-- end of title and student content -->
+
+~[wc:guardian_footer]
+</body>
+</html>
