@@ -1,0 +1,37 @@
+<!-- Adds students.bus_route to the Student ModifyInfo screen
+     Also hides unused rows
+-->
+
+<script type="text/javascript" language="JavaScript">
+
+    $j(document).ready(function() {
+
+        $j('table').first().find('tr').first().before( $j('#busRow') );
+
+        $j('table').first().children('tbody').children('tr:contains("Family rep")').remove();
+        $j('table').first().children('tbody').children('tr:contains("Graduation Requirement Set")').remove();
+        $j('table').first().children('tbody').children('tr:contains("Current House")').remove();
+        $j('table').first().children('tbody').children('tr:contains("Current Campus")').remove();
+        $j('table').first().children('tbody').children('tr:contains("Lunch ID")').remove();
+        $j('table').first().children('tbody').children('tr:contains("Tracker")').remove();
+        $j('table').first().children('tbody').children('tr:contains("Phone ID")').remove();
+
+        // update the zebra striping
+        $j('table').first().children('tbody').children('tr').not('.headerrow').filter(':even').attr('bgcolor','#edf3fe');
+        $j('table').first().children('tbody').children('tr').not('.headerrow').filter(':odd').attr('bgcolor','#ffffff');
+
+    });
+
+</script>
+
+<!-- This can be below the script as long as use document.ready so loaded after
+    the rest of the document is loaded.
+-->
+<div class="hide">
+    <table>
+        <tr id="busRow">
+        <td class="bold">Bus Number</td>
+        <td><input type="text" name="[students]bus_route" value="" size="10" maxlength="10"></td>       
+        </tr>
+    </table>
+</div>
