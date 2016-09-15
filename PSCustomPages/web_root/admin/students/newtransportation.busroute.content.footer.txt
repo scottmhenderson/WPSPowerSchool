@@ -1,0 +1,25 @@
+<!-- Adds hidden students.bus_route to the Edit Transportation screen
+     and sets it whenever the Description field is modified.
+    TWIN: edittransportation.busroute.content.footer.txt.  When edit one, edit the other!
+-->
+
+<script type="text/javascript" language="JavaScript">
+
+    $j(document).ready(function() {
+
+        $j( '#fieldDescription' ).change(function() {
+            $j('#busRoute').val($j('#fieldDescription').val());
+            console.log($j('#busRoute').val());
+        });
+    });
+
+</script>
+
+<div class="hide">
+    <table>
+        <tr id="busRow">
+        <td class="bold">Bus Number</td>
+        <td><input type="text" name="[students]bus_route" id=busRoute value="" size="10" maxlength="10"></td>       
+        </tr>
+    </table>
+</div>

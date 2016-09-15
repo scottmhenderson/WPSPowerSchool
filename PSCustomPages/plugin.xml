@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><plugin xmlns="http://plugin.powerschool.pearson.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" description="Modify Info screen updates - add Bus Number, remove unused" name="BusNumberModifyInfo" version="1.1" xsi:schemaLocation="http://plugin.powerschool.pearson.com plugin.xsd">
+<?xml version="1.0" encoding="UTF-8"?><plugin xmlns="http://plugin.powerschool.pearson.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" description="Automatically set bus_route when create/edit Transportation" name="BusRouteAutoSet" version="1.0" xsi:schemaLocation="http://plugin.powerschool.pearson.com plugin.xsd">
 <publisher name="Scott Henderson">
 <contact email="hendersons@westboroughk12.org"/>
 </publisher>
