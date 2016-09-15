@@ -7,9 +7,9 @@
 
     $j(document).ready(function() {
 
-        $j( '#fieldDescription' ).change(function() {
-            $j('#busRoute').val($j('#fieldDescription').val());
-            console.log($j('#busRoute').val());
+        var busno_element = $j('tr:contains("Bus Number")').children().last().children().first();
+        busno_element.change(function() {
+            $j('#busRoute').val(busno_element.val());
         });
     });
 
@@ -17,8 +17,7 @@
 
 <div class="hide">
     <table>
-        <tr id="busRow">
-        <td class="bold">Bus Number</td>
+        <tr>
         <td><input type="text" name="[students]bus_route" id=busRoute value="" size="10" maxlength="10"></td>       
         </tr>
     </table>
