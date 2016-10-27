@@ -4,64 +4,71 @@
 <ReportGroup>State Reporting</ReportGroup>
 <ReportDescription>Look for common things that can be wrong in student records that can cause a student to not be sent to the state, or other discrepancies between our list and the state's list</ReportDescription>
 <SQLQuery><textarea name="UF-0060051653">select 
-  s.student_number, 
-  s.lastfirst,
-  -- NOTE cannot use column filtering if have calculated fields
+  s.dcid,
+  s.student_number,
   case when s.state_studentnumber is null then '-'
            when length(s.state_studentnumber) &lt; 10 then CONCAT('!SHORT - ', s.state_studentnumber)
            else s.state_studentnumber
      end sasid,
+  '&lt;a href=/admin/students/home.html?frn=001'||to_char(s.dcid)||' target=_blank&gt;'||s.LastFirst||'&lt;/a&gt;',
+  sch.abbreviation, s.grade_level,
   case when s.gender is null then '-' else s.gender end gender,
   case when sr.id is null then '-' else sr.racecd end RaceBox,
-  case when ps_customfields.getcf('students',s.id,'ma_ercode') is null 
+  case when ma.EthnicityRaceCode is null 
     then '-' 
-    else ps_customfields.getcf('students',s.id,'ma_ercode') 
+    else ma.EthnicityRaceCode
     end ERCode,
-  case when ps_customfields.getcf('students',s.id,'ma_city') is null 
+  case when ma.CityOfResidence is null 
     then '-' 
-    else ps_customfields.getcf('students',s.id,'ma_city') 
+    else ma.CityOfResidence
     end MA_City,
-  case when ps_customfields.getcf('students',s.id,'ma_birthcity') is null 
+  case when ma.BirthCity is null 
     then '-' 
-    else ps_customfields.getcf('students',s.id,'ma_birthcity') 
+    else ma.BirthCity
     end MA_BirthCity,
 
 to_char(s.entrydate,'MM/DD/YY') EntryDate,
 s.state_excludefromreporting
 FROM students s
+join schools sch on s.schoolid=sch.school_number
+join s_ma_stu_demographic_x ma on ma.studentsdcid=s.dcid
 LEFT OUTER JOIN studentrace sr on s.id=sr.studentid
 WHERE
---  s.state_excludefromreporting &lt;&gt; 1
---  AND
+  s.enroll_status = 0
+  AND
+  s.state_excludefromreporting &lt;&gt; 1
+  AND
+  (~(curschoolid)=0 OR ~(curschoolid)=s.schoolid)
+  AND
   ( s.state_studentnumber is null
     OR
     length(s.state_studentnumber) &lt; 10
     OR
-    ps_customfields.getcf('students',s.id,'ma_city') is null
+    ma.CityOfResidence is null
     OR
     s.gender is null
     OR
     sr.id is null
     OR
-    ps_customfields.getcf('students',s.id,'ma_ercode') is null
+    ma.EthnicityRaceCode is null
     OR
-    ps_customfields.getcf('students',s.id,'ma_birthcity') is null
+    ma.BirthCity is null
   )
   ORDER BY s.state_excludefromreporting, s.entrydate, s.lastfirst
 ;</textarea></SQLQuery>
 <ReportHeader><p>Empty list is good.<br>EntryDate is so you know which students don't matter because entered after reporting period.<br>Sort to bring missing (-) values in various columns to the top.<br>Includes exclusions, filter out or sort to bottom</p>
-<th>StuNo</th><th>Name</th><th>SASID</th><th>Gender</th><th>RaceBox</th><th>ERCode</th><th>CityOfRes</th><th>CityOfBirth</th><th>EntryDate</th><th>Exclude</th></ReportHeader>
+<th class="DCID">Student DCID</th><th>StuNo</th><th>SASID</th><th>Name</th><th>Sch</th><th>Grade</th><th>Gender</th><th>RaceBox</th><th>ERCode</th><th>CityOfRes</th><th>CityOfBirth</th><th>EntryDate</th><th>Exclude</th></ReportHeader>
 <CreateStudentSelection>0</CreateStudentSelection>
 <StudentSelectionQuery></StudentSelectionQuery>
-<CreateStudentSelectionB></CreateStudentSelectionB>
-<IncludeRowNumber>0</IncludeRowNumber>
+<CreateStudentSelectionB>1</CreateStudentSelectionB>
+<IncludeRowNumber>1</IncludeRowNumber>
 <OpeninNewWindow>0</OpeninNewWindow>
 <HideCopyButton>1</HideCopyButton>
 <HideCSVButton>1</HideCSVButton>
 <HideTabButton>1</HideTabButton>
 <HidePDFButton>1</HidePDFButton>
 <ShowSearchBox>1</ShowSearchBox>
-<ShowResultsInfo></ShowResultsInfo>
+<ShowResultsInfo>1</ShowResultsInfo>
 <ParameterName1></ParameterName1>
 <ParameterVal1></ParameterVal1>
 <ParameterCal1></ParameterCal1>
@@ -105,3 +112,5 @@ WHERE
 <ValueLi3>0</ValueLi3>
 <NoHeaderRow></NoHeaderRow>
 <ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>
