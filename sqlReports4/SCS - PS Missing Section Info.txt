@@ -1,0 +1,89 @@
+<ReportName>SCS - PS Missing Section Info</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>State Reporting</ReportGroup>
+<ReportDescription>Missing Section Script  Created: 2014-04-09  By: Ben Davis
+TODO: remove Exclude from State Reporting from the list
+This script is designed to pull out any sections that are missing required state data and would therefore not be sent to the state for SIMS reporting.
+Usage: To use this script, change the value of t.Yearid + 1990 = 2013.  The 2013 will be the year that you are looking for.
+For example, the 2013-2014 school year will be 2013.
+</ReportDescription>
+<SQLQuery><textarea name="UF-0060051943">select
+	s.Course_Number, s.Section_Number, s.SchoolID, s.TermID,
+	(case
+		when SIF_DATA_CHECK.F_SIF_MA_All_Data_Check(13, (select dcid from courses c where c.course_number = s.Course_number)) &lt;&gt; 1 then 'Yes'
+		else 'No'
+	end) as COURSE_MISSING,
+	(case
+		when SIF_DATA_CHECK.F_SIF_MA_All_Data_Check(2, (select ss.users_dcid from SchoolStaff ss where ss.id = s.teacher)) &lt;&gt; 1 then 'Yes'
+		else 'No'
+	end) as TEACHER_MISSING     
+from sections s
+join terms t on t.id = s.termid and s.schoolid = t.schoolid
+join courses c on s.course_number=c.course_number 
+  and s.schoolid=c.schoolid
+where
+	t.Yearid + 1990 = 2015
+	-- Check that all the term data is present
+	AND SIF_DATA_CHECK.F_SIF_MA_All_Data_Check(15, s.dcid) &lt;&gt; 1
+	-- Remove Courses with Exclude from EPIMS flag
+	AND (ps_customfields.getcf('COURSES', c.id, 'MA_exclude_from_epims') is null
+		OR ps_customfields.getcf('COURSES', c.id, 'MA_exclude_from_epims') = '0');
+</textarea></SQLQuery>
+<ReportHeader><th>CourseNum</th><th>SecNum</th><th>School</th><th>Term</th><th>CourseMissing</th><th>TeacherMissing</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt></UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>

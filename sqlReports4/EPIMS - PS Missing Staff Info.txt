@@ -1,0 +1,113 @@
+<ReportName>EPIMS - PS Missing Staff Info</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>State Reporting</ReportGroup>
+<ReportDescription>Missing Staff Script  Created: 2014-04-09  By: Ben Davis
+This script is designed to pull out any staff who are missing required state data and would therefore not be sent to the state for SIMS reporting.</ReportDescription>
+<SQLQuery><textarea name="UF-0060051942">select
+	u.LastFirst,
+	u.HomeSchoolID,
+	u.teachernumber, 
+        ma.mepid,
+	(case 
+		when trim(MA.mepid) is null then 'Yes'
+		else 'No'
+	end) as MEPID_NULL,
+	(case 
+		when length(MA.mepid) &lt;&gt; 8 then 'Yes'
+		else 'No'
+	end) as MEPID_NOT_8DIGITS,
+	(case 
+		when  TRIM(TRANSLATE(MA.mepid, '0123456789', '          ')) &lt;&gt; '' then 'Yes'
+		else 'No'
+	end) as MEPID_NOT_NUMERIC,
+	(case 
+		when not exists(select 'Y' from teacherrace tr where tr.teacherid = s.id) then 'Yes'
+		else 'No'
+	end) as RACE_CHECKBOX_MISSING,
+	(case 
+		when u.FedEthnicity not in (0,1) then 'Yes'
+		else 'No'
+	end) as RACE_ETHNICITY_MISSING,
+	(case 
+		when MA.EthnicityRaceCode is null then 'Yes'
+		else 'No'
+	end) as RACE_MA_CODE_MISSING,
+	(case 
+		when uc.DOB is null then 'Yes'
+		else 'No'
+	end) as DOB_MISSING,
+	(case 
+		when u.Email_Addr is null then 'Yes'
+		else 'No'
+	end) as EMAIL_MISSING, 
+	MA.state_excludefromreporting Excluded
+from users u
+join userscorefields uc on u.dcid=uc.usersdcid
+left join SchoolStaff s on (s.users_dcid = u.dcid and s.SchoolID = u.HomeSchoolId)
+join s_ma_usr_x ma on ma.usersdcid=u.dcid
+where
+	-- Check that all the SP data is present
+	SIF_DATA_CHECK.F_SIF_MA_All_Data_Check(2, u.dcid) &lt;&gt; 1
+	-- Do only active staff
+	AND s.status = 1
+       AND (ma.state_excludefromreporting is null OR 
+                ma.state_excludefromreporting &lt;&gt; 1)
+ORDER BY u.homeschoolid, u.teachernumber;</textarea></SQLQuery>
+<ReportHeader><th>LastFirst</th><th>HomeSchool</th><th>TeacherNum</th><th>MEPID</th><th>MEPIDnull</th><th>MEPIDlen</th><th>MEPIDnan</th><th>NoRaceBox</th><th>NoRaceEth</th><th>NoMARaceCode</th><th>NoDOB</th><th>NoEmail</th><th>Exclude</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt></UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>

@@ -1,0 +1,78 @@
+<ReportName>S2 term grades by grade_level, student</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>WHS</ReportGroup>
+<ReportDescription>All WHS Q3, Q4, F1 grades, but all three grades on same line.
+Grade order: F1, Q3, Q4</ReportDescription>
+<SQLQuery><textarea name="UF-0060051866">select s.lastfirst, s.grade_level, c.course_name, sec.section_number, S2Grades.grades
+from students s
+join
+      (select studentid, sectionid, listagg(grade,', ') within group (order by finalgradename) as grades
+      from pgfinalgrades fg
+      join sections sec on fg.sectionid=sec.id
+      and sec.termid &gt;= 2500
+      and sec.schoolid=3210505
+      join students s on fg.studentid=s.id
+      and s.grade_level &gt; 8
+      and fg.finalgradename in ('F1', 'Q3', 'Q4')
+      group by studentid, sectionid) S2Grades on S2Grades.studentid=s.id
+join sections sec on sec.id=S2Grades.sectionid
+join courses c on sec.course_number=c.course_number
+order by s.grade_level, s.lastfirst, c.course_name;</textarea></SQLQuery>
+<ReportHeader><th>Name</th><th>Grade Lev</th><th>Course</th><th>Section</th><th>F1 Q3 Q4</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox>1</ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt>1</UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>

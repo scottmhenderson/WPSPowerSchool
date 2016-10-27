@@ -1,0 +1,97 @@
+<ReportName>SIMS - PS Missing Term Data</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>State Reporting</ReportGroup>
+<ReportDescription>/* Missing Term Script
+ * Created: 2014-04-09
+ * By: Ben Davis
+ *
+ * This script is designed to pull out any terms that are missing required state data and would therefore not be sent to the
+ * state for SIMS reporting.
+ * 
+ * Usage: To use this script, change the value of Yearid + 1990 = 2013.  The 2013 will be the year that you are looking for.
+ * 		  For example, the 2013-2014 school year will be 2013.
+*/
+</ReportDescription>
+<SQLQuery><textarea name="UF-0060051941">select
+	t.name, t.firstday, t.lastday, t.schoolid, t.yearid,
+	(case
+		when t.FirstDay is null then 'Yes'
+		else 'No'
+	end) FIRSTDAY_MISSING,
+	(case
+		when t.LastDay is null then 'Yes'
+		else 'No'
+	end) LASTDAY_MISSING,
+	(case
+		when not EXISTS(SELECT ps_customfields.getcf('MA_YearTermMapper', vtd2.unique_id, 'ma_termid') as MA_TermID
+						FROM virtualtablesdata2 vtd2
+						WHERE t.ID = ps_customfields.getcf('MA_YearTermMapper', vtd2.unique_id, 'term')
+							AND t.SCHOOLID = vtd2.ForeignKey
+                                   AND (ps_customfields.getcf('MA_YearTermMapper', vtd2.unique_id, 'ma_termid') is not null
+                                   OR ps_customfields.getcf('MA_YearTermMapper', vtd2.unique_id, 'ma_termid') &lt;&gt; ''))
+			then 'Yes'
+		else 'No'
+	end) as MA_TERM_CODE_MISSING
+from terms t
+where
+	Yearid + 1990 = 2015
+	-- Check that all the term data is present
+	AND SIF_DATA_CHECK.F_SIF_MA_All_Data_Check(14, t.dcid) &lt;&gt; 1;</textarea></SQLQuery>
+<ReportHeader><th>Name</th><th>FirstDay</th><th>LastDay</th><th>SchoolID</th><th>YearID</th><th>FirstDayMissing</th><th>LastDayMissing</th><th>MATermCodeMissing</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt></UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>

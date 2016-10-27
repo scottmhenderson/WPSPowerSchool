@@ -1,0 +1,91 @@
+<ReportName>SCS - PS Missing Course Info</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>State Reporting</ReportGroup>
+<ReportDescription>Missing Course Script  Created: 2014-04-09  By: Ben Davis
+This script is designed to pull out any courses that are missing required state data and would therefore not be sent to the state for SIMS reporting.  You will need to change the 2300 and 2400 to match what is needed for the current year.
+</ReportDescription>
+<SQLQuery><textarea name="UF-0060051945">select DISTINCT
+	c.Course_Name, c.Course_Number, sc.schoolid,
+	(case
+		when Course_Name is null then 'Yes'
+		else 'No'
+	end) COURSE_NAME_MISSING,
+	(case
+		when Course_Number is null then 'Yes'
+		else 'No'
+	end) COURSE_NUMBER_MISSING,
+	(case
+		when ps_customfields.getcf('COURSES', c.id, 'MA_nces_code') is null	then 'Yes'
+		else 'No'
+	end) as NCES_CODE_MISSING
+from Courses c
+JOIN School_Course sc on sc.Courseid = c.id
+where
+	sc.YearID = 25
+	-- Check that all the Course data is present
+	AND SIF_DATA_CHECK.F_SIF_MA_All_Data_Check(13, sc.dcid) &lt;&gt; 1
+	-- Remove Courses with Exclude from EPIMS flag
+	AND (ps_customfields.getcf('COURSES', c.id, 'MA_exclude_from_epims') is null
+		OR ps_customfields.getcf('COURSES', c.id, 'MA_exclude_from_epims') = '0')
+	-- Limit to only courses that have a section in this year
+	--and (select count(ID) from sections s where s.course_number = c.course_number and s.termid &gt;= 2500 and s.termid &lt; 2600 )   &gt; 0
+order by SchoolID, Course_name
+;</textarea></SQLQuery>
+<ReportHeader><th>Course</th><th>CourseNum</th><th>School</th><th>NoName</th><th>NoNum</th><th>NoNcesCode</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt></UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>

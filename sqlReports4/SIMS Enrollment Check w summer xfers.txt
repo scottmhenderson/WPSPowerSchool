@@ -1,0 +1,112 @@
+<ReportName>SIMS Enrollment Check</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>State Reporting</ReportGroup>
+<ReportDescription></ReportDescription>
+<SQLQuery><textarea name="UF-0060051650">select 
+  schoolcode, 
+  grade_level, 
+  count(*) 
+FROM (
+  SELECT 
+    CASE WHEN ps_customfields.getcf('students',s.id,'ma_schoolcode')
+      IS NULL THEN s.schoolid
+      ELSE CAST(ps_customfields.getcf('students',s.id,'ma_schoolcode') 
+        as number) 
+      END schoolcode, 
+    s.grade_level 
+  FROM students s
+  -- this gets single most-recent reenrollment per student
+  left JOIN (select reo.studentid, reo.entrydate, reo.exitdate, reo.exitcode
+        from reenrollments reo
+        join (select studentid, max(id) id from reenrollments group by studentid)
+        rei on reo.id=rei.id) re
+  ON re.studentid=s.id
+  WHERE 
+  -- Kids still here. Got here before and exit after reporting date.
+  (
+    s.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+    and s.exitdate &gt; to_date('%param1%','DD-MON-YY')
+    and s.state_excludefromreporting &lt;&gt; 1
+  )
+  -- Kids who have left, but were here and reported on last year,
+  -- so have to report on them this year too.
+or (
+   s.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+   and s.exitdate &lt;= to_date('%param1%','DD-MON-YY')
+   and s.exitdate &gt; to_date('%param2%','DD-MON-YY')
+   and s.state_excludefromreporting &lt;&gt; 1
+   )
+-- Same as previous - left but were here and reported on last year,
+-- but found in reenrollments table.
+or (
+   re.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+   and re.exitdate &lt;= to_date('%param1%','DD-MON-YY')
+   and re.exitdate &gt; to_date('%param2%','DD-MON-YY')
+   and s.state_excludefromreporting &lt;&gt; 1
+    )
+-- Add the kids that were here earlier in the year, left, and came back after current period deadline
+or (s.entrydate &gt; to_date('%param1%','DD-MON-YY') 
+    and re.entrydate is not null 
+    and re.entrydate &lt;= to_date('%param1%','DD-MON-YY') 
+    and re.exitdate is not null
+    and re.exitdate &gt; to_date('%param2%','DD-MON-YY') 
+    and re.exitcode &lt;&gt; 'TRF')
+)
+group by schoolcode, grade_level
+order by schoolcode, grade_level;</textarea></SQLQuery>
+<ReportHeader><th>MA_SchoolCode</th><th>Grade</th><th>Enrollment</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1>Current Reporting Date DD-MMM-YY</ParameterName1>
+<ParameterVal1>1-MAR-16</ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2>Previous EOY Date DD-MMM-YY</ParameterName2>
+<ParameterVal2>1-JUN-15</ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt></UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
