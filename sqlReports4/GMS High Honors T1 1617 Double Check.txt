@@ -1,0 +1,84 @@
+<ReportName>GMS High Honors T1 1617 Double Check</ReportName>
+<ReportTitle>GMS High Honors T1 1617 Double Check</ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>Gibbons</ReportGroup>
+<ReportDescription>Calculate honor roll via SQL to double-check PowerSchool's calculation</ReportDescription>
+<SQLQuery><textarea name="UF-0060052229">select  s.dcid, '&lt;a href=/admin/students/home.html?frn=001'||to_char(s.dcid)||' target=_blank&gt;'||s.LastFirst||'&lt;/a&gt;', s.grade_level from students s
+where s.enroll_status=0
+and s.schoolid=3210305
+-- high honors disqualified if more than one B+
+and s.id not in
+(select studentid from storedgrades
+where schoolid=3210305
+and termid&gt;=2600
+and storecode='T1'
+and excludefromhonorroll&lt;&gt;1
+and percent &lt; 87
+group by studentid
+having count(*) &gt; 1)
+-- high honors disqualified if anything other than A+, A, A-, B+
+and s.id not in (
+select distinct studentid from storedgrades
+where schoolid=3210305
+and termid&gt;=2600
+and storecode='T1'
+and excludefromhonorroll&lt;&gt;1
+and grade not in ('A+','A','A-','B+','P')
+) order by s.grade_level, s.lastfirst;</textarea></SQLQuery>
+<ReportHeader> <th class="DCID">Student DCID</th><th>Student</th><th>GradeLevel</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB>1</CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox>1</ShowSearchBox>
+<ShowResultsInfo>1</ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt>1</UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>

@@ -1,0 +1,68 @@
+<ReportName>Staff CORI Dates</ReportName>
+<ReportTitle>Staff CORI Dates</ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>Tech</ReportGroup>
+<ReportDescription></ReportDescription>
+<SQLQuery><textarea name="UF-0060052226">select u.teachernumber, u.lastfirst, case when ext.cori_date is null then '-' else to_char(ext.cori_date,'MM-DD-YYYY') end, to_char(ext.cori_date,'YYYY'), round(extract(DAY from current_timestamp-ext.cori_date)/30)  from users u
+join U_DEF_EXT_USERS ext on u.dcid=ext.USERSDCID
+join (select distinct users_dcid from schoolstaff where status=1) ss on u.dcid=ss.users_dcid
+left join s_ma_usr_x ma on ma.usersdcid=u.dcid
+where ma.state_excludefromreporting is null or ma.state_excludefromreporting&lt;&gt;1
+order by u.lastfirst;</textarea></SQLQuery>
+<ReportHeader><th>TeachNo</th><th>Name</th><th>CORI Date</th><th>CORI Year</th><th>Months Old</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox>1</ShowSearchBox>
+<ShowResultsInfo>1</ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt>1</UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>

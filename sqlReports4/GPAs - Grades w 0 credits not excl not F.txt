@@ -1,0 +1,73 @@
+<ReportName>GPAs - Grades w 0 credits not excl not F</ReportName>
+<ReportTitle>GPAs - Grades w 0 credits not excl not F</ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>WHS</ReportGroup>
+<ReportDescription>Look for (unexpected) grades with zero earned credits but not flagged exclude from gpa and grade other than F</ReportDescription>
+<SQLQuery><textarea name="UF-0060052084">select s.student_number,  '&lt;a href=/admin/students/home.html?frn=001'||to_char(s.dcid)||' target=_blank&gt;'||s.LastFirst||'&lt;/a&gt;', sg.potentialcrhrs, sg.earnedcrhrs, sg.excludefromgpa, sg.grade, sg.course_name, sg.percent, sg.gpa_points,
+       sg.gradescale_name, sg.TermID, 
+       sg.credit_type, sg.grade_level
+from students s
+join storedgrades sg on s.id=sg.studentid
+where 
+s.enroll_status=0
+and s.state_excludefromreporting &lt;&gt; 1
+and sg.grade &lt;&gt; 'F'
+and sg.earnedcrhrs=0 and sg.excludefromgpa&lt;&gt;1
+and sg.grade_level &gt;=9 and sg.storecode='Y1';</textarea></SQLQuery>
+<ReportHeader><th>StuNo</th><th>Student</th><th>PotentialCs</th><th>EarnedCs</th><th>Exclude</th><th>Grade</th><th>Course</th><th>%</th><th>GPAPoints</th><th>GradeScale</th><th>TermID</th><th>CreditType</th><th>GradeLevel</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt></UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>
