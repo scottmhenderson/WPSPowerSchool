@@ -1,0 +1,22 @@
+<style type="text/css">
+#btn-signoffs a {background: url(/images/img/checkbox7.png) no-repeat;}
+
+</style>
+<script type="text/javascript">
+$j(document).ready(function(){
+	var l = $j('div#nav-main > ul');
+
+        ~[if#ismps.~(curschoolid)=3210045]
+			~[if#student.isstudent]
+				l.find('li#btn-schoolInformation').after('<li id="btn-signoffs"><a href="/guardian/signOffs.html">Sign-Offs</a></li>');
+			[else#student]
+				l.find('li#btn-accountPreferences').before('<li id="btn-signoffs"><a href="/guardian/signOffs.html">Sign-Offs</a></li>');
+			[/if#student]
+        [/if#ismps]
+        ~[if.~(curschoolid)=3210999]
+            l.find('li#btn-accountPreferences').before('<li id="btn-signoffs"><a href="/guardian/signOffs.html">Sign-offs</a></li>');
+        [/if]
+		
+
+});
+</script>

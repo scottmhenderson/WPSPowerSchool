@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Sign-Offs</title>
+
+~[wc:guardian_header]
+
+~[SetPostValue:selectedTab=signOffs] 
+<!-- Removed templates suggested by PS parent screeen template.
+     One I think is for if I add the ability to enable/disable this screen via a school preference.
+     brij_render thing caused the "Grades and Attendance" tab to appear on my custom screen.
+-->
+
+<h1>Sign-Offs: ~(studentname)</h1>
+
+<script type="text/javascript">
+
+	// If navigate to another student in a school where this page isn't
+	//  supported, navigate away from this page
+	if( ~([Students]schoolid) != 3210045 ) {
+		window.location.replace("home.html");
+	}
+
+    $j(document).ready(function() {
+
+        if( ~([Students]schoolid) == 3210045 ) {
+            $j('#academics').show();
+			$j('#buttonRow').show();
+
+			
+			// Get the current term's start day. 
+			// Since we're in a new term, all ReportCardReceived dates less than 
+			// this date are from the prior term and obsolete.
+			var terms = [~[tlist_sql;select firstday from terms where schoolid=~(curschoolid) and yearid=~(curyearid) and id=~(curtermid)]"~(1)",[/tlist_sql]];
+			// stray slash above confuses notepad++ code formatting, this fixes	
+			var threshold;
+			if( terms.length > 0 ) {
+				threshold = new Date(terms[0]);
+			}
+			var parentdate = new Date ("~([Students.U_Students_Signoff]ReportCardReceived)");
+		
+			if( threshold === undefined ) {
+				// something is amiss if can't find the current term start date
+				$j('#rcrMessage').text("There has been a technical error with this support, please notify your school");
+				$j('#rcrCheck').hide();
+				$j('#submitbutton').prop('disabled',true);			
+			} else if ( isNaN(parentdate.valueOf())
+						|| (parentdate <= threshold) ) {
+				// No date, or date is for last term, enable the checkbox
+				$j('#rcrCheck').show();					
+			} else {
+				// Date has already been set for this term, 
+				// display it, and hide the checkbox and Submit button
+				$j('#rcrCheck').hide();
+				var msg = "Report card acknowledged on " + "~([Students.U_Students_Signoff]ReportCardReceived)";
+				$j('#rcrMessage').text(msg);
+				$j('#submitbutton').prop('disabled',true);
+			}
+			
+        } else {
+			// Academics section not supported for this school
+            $j('#academics').hide();
+			$j('#buttonRow').hide();
+		}
+		
+		$j('#rcrCheck').click(function() {
+			// Set ReportCardReceived to current date
+			if( $j(this).is(":checked") ) {
+				$j('#rcrDate').val("~[short.date]");
+			} else {
+				$j('#rcrDate').val("~([Students.U_Students_Signoff]ReportCardReceived)");
+			}
+		});
+		
+
+    });
+		
+</script>
+
+<!-- title -->
+<body>
+
+<!-- start student content -->
+<div id="signOffs" class="box-round group">
+
+<form action="changesrecorded.html" method="POST" id="signOffs">
+
+<!-- remove class=grid when done with the grid lines -->
+<table id=academics class="grid" border="0" cellspacing="0" cellpadding="4">
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">Academics</td>
+</tr>
+<tr id=rcrRow>
+~[if#showcheck.isguardian]
+<td class="bold">I have seen my student's report card on the Report Card screen</td>
+<td><input type="checkbox" id="rcrCheck" value=""/><p id=rcrMessage></p></td>
+[else#showcheck]
+<td class="bold">Parent/guardian report card acknowledgment</td>
+<td><p id=rcrMessage>Please have your parent/guardian sign into the Parent Portal to view and acknowledge your report card.</p></td>
+[/if#showcheck]
+</tr>
+</table>
+
+~[if.isguardian]
+<div class="button-row" id="buttonRow"> 
+<input type="hidden" name="ac" value="autosendupdate" />
+<button type="submit" value="Submit" id=submitbutton>Submit</button>
+</div> 
+[/if]
+
+
+<div class="hide">
+<input type="text" name="[Students.U_Students_Signoff]ReportCardReceived" id="rcrDate" value="" size="10" class="psDateWidget" placeholder="MM/DD/YYYY">
+</div>
+</form>
+
+</div>
+
+<!-- end student content -->
+<!-- Sets the navigation highlighting: the value is the ID value of the navigation element you want to highlight--> 
+<input id="activeNav" type="hidden" value="#btn-signoffs"/> 
+
+
+<!-- end of title and student content -->
+~[wc:guardian_footer]
+</body>
+</html>
