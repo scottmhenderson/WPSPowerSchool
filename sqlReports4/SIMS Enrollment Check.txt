@@ -31,20 +31,21 @@ FROM (
   )
   -- Kids who have left, but were here and reported on last year,
   -- so have to report on them this year too.
-or (
-   s.entrydate &lt;= to_date('%param1%','DD-MON-YY')
-   and s.exitdate &lt;= to_date('%param1%','DD-MON-YY')
-   and s.exitdate &gt; to_date('%param2%','DD-MON-YY')
-   and s.state_excludefromreporting &lt;&gt; 1
-   )
+  -- 7/1/2016 - No longer need summer transfers
+--or (
+--   s.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+--   and s.exitdate &lt;= to_date('%param1%','DD-MON-YY')
+--   and s.exitdate &gt; to_date('%param2%','DD-MON-YY')
+--   and s.state_excludefromreporting &lt;&gt; 1
+--   )
 -- Same as previous - left but were here and reported on last year,
 -- but found in reenrollments table.
-or (
-   re.entrydate &lt;= to_date('%param1%','DD-MON-YY')
-   and re.exitdate &lt;= to_date('%param1%','DD-MON-YY')
-   and re.exitdate &gt; to_date('%param2%','DD-MON-YY')
-   and s.state_excludefromreporting &lt;&gt; 1
-    )
+--or (
+--   re.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+--   and re.exitdate &lt;= to_date('%param1%','DD-MON-YY')
+--   and re.exitdate &gt; to_date('%param2%','DD-MON-YY')
+--   and s.state_excludefromreporting &lt;&gt; 1
+--    )
 -- Add the kids that were here earlier in the year, left, and came back after current period deadline
 or (s.entrydate &gt; to_date('%param1%','DD-MON-YY') 
     and re.entrydate is not null 

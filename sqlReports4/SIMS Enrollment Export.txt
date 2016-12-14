@@ -32,20 +32,21 @@ WHERE
   )
   -- Kids who have left, but were here and reported on last year,
   -- so have to report on them this year too.
-or (
-   s.entrydate &lt;= to_date('%param1%','DD-MON-YY')
-   and s.exitdate &lt;= to_date('%param1%','DD-MON-YY')
-   and s.exitdate &gt; to_date('%param2%','DD-MON-YY')
-   and s.state_excludefromreporting &lt;&gt; 1
-   )
+  -- 7/1/16 No longer need to include summer transfers
+--or (
+--   s.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+--   and s.exitdate &lt;= to_date('%param1%','DD-MON-YY')
+--   and s.exitdate &gt; to_date('%param2%','DD-MON-YY')
+--   and s.state_excludefromreporting &lt;&gt; 1
+--   )
 -- Same as previous - left but were here and reported on last year,
 -- but found in reenrollments table.
-or (
-   re.entrydate &lt;= to_date('%param1%','DD-MON-YY')
-   and re.exitdate &lt;= to_date('%param1%','DD-MON-YY')
-   and re.exitdate &gt; to_date('%param2%','DD-MON-YY')
-   and s.state_excludefromreporting &lt;&gt; 1
-    )
+--or (
+--   re.entrydate &lt;= to_date('%param1%','DD-MON-YY')
+--   and re.exitdate &lt;= to_date('%param1%','DD-MON-YY')
+--   and re.exitdate &gt; to_date('%param2%','DD-MON-YY')
+--   and s.state_excludefromreporting &lt;&gt; 1
+--    )
 -- Add the kids that were here earlier in the year, left, and came back after current period deadline
 or (s.entrydate &gt; to_date('%param1%','DD-MON-YY') 
     and re.entrydate is not null 
@@ -68,7 +69,7 @@ order by s.schoolid, s.grade_level, s.lastfirst
 <ShowSearchBox></ShowSearchBox>
 <ShowResultsInfo></ShowResultsInfo>
 <ParameterName1>Current Reporting Date DD-MMM-YY</ParameterName1>
-<ParameterVal1>1-MAR-16</ParameterVal1>
+<ParameterVal1>21-JUN-16</ParameterVal1>
 <ParameterCal1></ParameterCal1>
 <ParameterOpt1></ParameterOpt1>
 <ParameterName2>Previous EOY Date DD-MMM-YY</ParameterName2>
@@ -110,3 +111,5 @@ order by s.schoolid, s.grade_level, s.lastfirst
 <ValueLi3>0</ValueLi3>
 <NoHeaderRow></NoHeaderRow>
 <ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>
