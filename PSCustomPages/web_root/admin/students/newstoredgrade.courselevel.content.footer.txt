@@ -1,0 +1,24 @@
+<!-- Adds Course Level to New Stored Grade screen
+-->
+
+<script type="text/javascript" language="JavaScript">
+
+    $j(document).ready(function() {
+
+        $j('tr:contains("(b) Course name")').first().after($j('#courselevelRow'));
+        
+    });
+
+</script>
+
+<!-- This can be below the script as long as use document.ready so loaded after
+    the rest of the document is loaded.
+-->
+<div class="hide">
+    <table>
+        <tr id="courselevelRow">
+        <td class="bold">Course level</td>
+        <td><input type="text" name="[31]gpa_custom1"  value="" size="10" maxlength="1" id="course_level_input"></td>
+        </tr>
+    </table>
+</div>
