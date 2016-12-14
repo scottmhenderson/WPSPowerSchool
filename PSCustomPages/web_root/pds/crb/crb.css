@@ -1,0 +1,197 @@
+.dialogM {
+	visibility: 		visible !important;
+}
+table.resultsFilters label,table.resultsFilters select,table.resultsFilters input[type="text"] {
+	width:				auto;
+}
+div#resultsHeader {
+	font-weight:		bold;
+	text-align:			center;
+}
+hr.pageseperator {
+	border: 			2px dashed #F00;
+}
+.page {
+	width:				8.5in;
+	padding: 			0in .25in;
+}
+
+.italic {
+	font-style: 		italic;
+}
+.strike {
+	font-style: 		italic;
+	text-decoration: 	line-through;
+}
+
+.aGreen {background-color: #2ECC2E !important;}
+.aYellow {background-color: #F7F79A !important;}
+.aRed {background-color: #E98B8B !important;}
+
+.GrandTotal {
+	font-weight: 		bold;
+	background-color: 	#8EE68E !important;
+}
+.SchoolTotal {
+	font-weight: 		bold;
+	background-color: 	#FC9 !important;
+}
+
+#sep_schools {
+	margin: 			0px;
+	border: 			3px ridge #CCCCCC !important;
+}
+#sep_days {
+	border: 			4px inset #8484FF !important;
+}
+
+div.indentdiv {
+	margin: 			0 10px;
+	width: 				webkit calc(100% - 20px);
+	width: 				calc(100% - 20px);
+}
+h2.indentdiv {
+	margin: 			0 10px !important;
+	padding: 			0px !important;
+	width: 				webkit calc(100% - 20px);
+	width: 				calc(100% - 20px);
+}
+div#userparams {
+	background:			#BAD3E5;
+}
+div#userparams button {
+	color: 				#FFF !important;
+}
+
+p.noprint {
+	width: 				initial !important;
+	padding: 			0px;
+}
+
+/* BEGIN Data Tables Settings */
+table.dataTable {
+	margin: 			0 auto;
+	width: 				100%;
+}
+
+table.dataTable thead th {
+	padding: 			3px 18px 3px 10px;
+	border-bottom: 		1px solid black;
+	font-weight: 		bold;
+	cursor: 			pointer;
+	*cursor: 			hand;
+}
+
+table.dataTable tfoot th {
+	padding: 			3px 18px 3px 10px;
+	border-top: 		1px solid black;
+	font-weight: 		bold;
+}
+
+table.dataTable td {
+	padding: 			3px 10px;
+}
+
+table.dataTable td.center,
+table.dataTable td.dataTables_empty {
+	text-align: 		center;
+}
+
+table.dataTable tr.odd { background-color: #D7EBF4; }
+table.dataTable tr.even { background-color: white; }
+
+table.dataTable tr.odd td.sorting_1 { background-color: #D3D6FF; }
+table.dataTable tr.odd td.sorting_2 { background-color: #DADCFF; }
+table.dataTable tr.odd td.sorting_3 { background-color: #E0E2FF; }
+table.dataTable tr.even td.sorting_1 { background-color: #EAEBFF; }
+table.dataTable tr.even td.sorting_2 { background-color: #F2F3FF; }
+table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
+
+table.display tr.even.row_selected td { background-color: #B0BED9; }
+table.display tr.odd.row_selected td { background-color: #9FAFD1; }
+
+.dataTables_wrapper {
+	position: 			relative;
+	*zoom: 				1;
+}
+.dataTables_length {
+	float: 				left;
+}
+.dataTables_filter {
+	float: 				right;
+	text-align: 		right;
+}
+
+/* Sorting */
+.sorting { background: url('/pds/crb/DataTables/media/images/sort_both.png') no-repeat center right #BAD3E5; }
+.sorting_asc { background: url('/pds/crb/DataTables/media/images/sort_asc.png') no-repeat center right #BAD3E5; }
+.sorting_desc { background: url('/pds/crb/DataTables/media/images/sort_desc.png') no-repeat center right #BAD3E5; }
+
+.sorting_asc_disabled { background: url('/pds/crb/DataTables/media/images/sort_asc_disabled.png') no-repeat center right #BAD3E5; }
+.sorting_desc_disabled { background: url('/pds/crb/DataTables/media/images/sort_desc_disabled.png') no-repeat center right #BAD3E5; }
+ 
+table.dataTable th:active {
+	outline: 			none;
+}
+
+/*  ColVis styles */
+.ColVis {
+	float: 				left;
+	margin-bottom: 		1em;
+}
+
+div.ColVis_collection {
+	position: 			relative;
+	width: 				150px;
+	padding: 			3px;
+	z-index: 			1102;
+}
+
+button.ColVis_Button {
+	text-align: 		left;
+}
+
+/*  Column Filter Widget styles */
+.column-filter-widget { float:left; padding: 5px; }
+.column-filter-widget select { display: block; }
+.column-filter-widgets a.filter-term { display: block; text-decoration: none; padding-left: 10px; font-size: 90%; }
+.column-filter-widgets a.filter-term:hover { text-decoration: line-through !important; }
+.column-filter-widget-selected-terms { clear:left; }
+
+
+/* END Data Tables Settings */
+
+@media print
+{
+	#branding-powerschool,	#print-school, #legal, p, .filtersHeader, .resultsFilters, div#legend, .makeCurrentSelection, div#header.group, h1 > span.screenonly, div.makeStudentSelection, input[type="submit"] {
+		display:		none !important;
+	}
+	.box-round {
+		border-style:	none;
+		border-color:	transparent;
+		width:			98%;
+		display:		initial;
+	}
+	#nav-main {
+		width:			1px !important;
+	}
+	.noscreen {
+		display:		block;
+	}
+	h1 {
+		margin: 		25px 20px 10px !important;
+	}
+	.landscape {
+		size: 			landscape;
+	}
+	.strike {
+		text-decoration:none;
+		font-style: 	italic;
+	}
+	.LandscapeDiv {
+  		PAGE-BREAK-BEFORE: always;
+  		width="100%";
+  		height="100%";
+  		filter: progid:DXImageTransform.Microsoft.BasicImage(Rotation=3);
+	}
+}

@@ -1,0 +1,48 @@
+<script type="text/javascript">
+$j(document).ready(function(){ 
+	if ( $j('a[href*="previousgrades.html"]').length > 0 ) { insertLink('Report Cards','reportCards.html?frn=~(studentfrn)','std_academics'); }
+});
+
+function insertLink(l,href,sec) {
+	var inserted = false;
+	~[if#vcheck.~[x:version]>=8.0]
+	$j('ul#'+sec+' li a').each(function(){
+		if (l < $j(this).html()) {
+			$j(this).parent().before(
+				'<!-- BEGIN link for '+l+' -->\
+				<li><a href="'+href+'">'+l+'</a></li>\
+				<!-- END link for '+l+' -->'
+			);
+			inserted = true;
+			return false;
+		}
+	});
+	if (!inserted) {
+		$j('ul#'+sec+' a').parent().last().after(
+			'<!-- BEGIN link for '+l+' -->\
+			<li><a href="'+href+'">'+l+'</a></li>\
+			<!-- END link for '+l+' -->'
+		);
+	};
+	[else#vcheck]
+	$j('td#'+sec+' a').each(function(){
+		if (l < $j(this).html()) {
+			$j(this).before(
+				'<!-- BEGIN link for '+l+' -->\
+				<a href="'+href+'">'+l+'</a><br />\
+				<!-- END link for '+l+' -->'
+			);
+			inserted = true;
+			return false;
+		}
+	});
+	if (!inserted) {
+		$j('td#'+sec+' a').last().after(
+			'<!-- BEGIN link for '+l+' -->\
+			<br /><a href="'+href+'">'+l+'</a>\
+			<!-- END link for '+l+' -->'
+		);
+	};
+	[/if#vcheck]
+}
+</script>

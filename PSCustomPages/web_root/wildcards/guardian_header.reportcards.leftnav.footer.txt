@@ -1,0 +1,9 @@
+<style type="text/css">
+#btn-reportCards a {background: url(/guardian/iconReportCards.png) no-repeat;}
+</style>
+<script type="text/javascript">
+$j(document).ready(function(){
+	var l = $j('div#nav-main > ul');
+	~[if.pref.reportcards~(curschoolid)=1][else]l.find('li#btn-gradesAttendance').after('<li id="btn-reportCards"><a href="/guardian/reportcards.html">Report Cards</a></li>');[/if]
+});
+</script>

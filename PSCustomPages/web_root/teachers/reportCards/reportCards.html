@@ -1,0 +1,334 @@
+~[if#pageaction.~(gpv.action)=]
+<!DOCTYPE html>
+<html>
+<head>
+<!--[CRM BEGIN]-->
+<title>Westborough Report Cards</title>
+<meta name="author" content="CLG" />
+<meta name="description" content="Westborough Report Cards" />
+<meta name="version" content="8.3.0" />
+<!--[CRM END]-->
+~[wc:commonscripts]
+<link href="/images/css/screen.css" rel="stylesheet" media="screen">
+<link href="/images/css/print.css" rel="stylesheet" media="print">
+<link href="/clg/reportcards/westboroughReportCard.css?modified=20151130" rel="stylesheet">
+<script type="text/javascript" src="/clg/reportcards/process.js?modified=20151215"></script>
+<script type="text/javascript" language="JavaScript">
+var baseurl = document.URL; 
+if (baseurl.indexOf('?') > -1) { baseurl = baseurl.substring( 0,baseurl.indexOf('?') ); }
+
+$j(document).ready(function(){
+	$j('div#legal p').html('Copyright&copy; 2011-2015 Computer Logic Group, Inc. All rights reserved.');
+	var reportPage = baseurl,
+		sid = $j('#s').val(),
+		gr = $j('#gr').val(),
+		sc = $j('#sc').val(),
+		yid = $j('#yid').val(),
+		secid = $j('#secid').val(),
+		nreports = 0,
+		p = 1;
+	
+	$j('div#common').hide().load('/teachers/reportCards/reportCardData.html?action=common');
+	$j('div#status,div#results').hide();
+	loadResults();
+	
+	function loadResults() {
+		if (p != 1) { 
+			$j('table.resultsFilters').find('select').attr('disabled','disabled');
+			$j('div#status').html('<div id="directions" class="feedback-alert">Searching for your results</div>').show();
+			$j('div#results').hide();
+			url = reportPage+'?action=loadResults&s='+sid+'&gr='+gr+'&sc='+sc+'&yid='+yid+'&secid='+secid;
+			$j('div#results').load(url,function(){
+				nreports = $j('div#reportsToShow div.reportCardDiv').length;
+				getMultiple('~[directory]');
+			});
+			$j( document ).ajaxStop(function(){
+				$j('div#status').html('<div id="directions" class="feedback-note">Completed processing '+nreports+' report cards</div>');
+				$j('div.pageafter.reportcard[data-cnt="'+nreports+'"]').remove();
+				$j('div#results').show();
+				$j('table.resultsFilters').find('select').removeAttr('disabled');
+			});
+		}
+	}
+	
+	$j('#pause').change(function(){
+		if ($j('#pause').is(':checked')){
+			p = 1;	
+		} else {
+			p = 0;
+		}
+		loadResults();
+	});
+	
+	$j('#s').change(function(){
+		sid = $j(this).val();
+		loadResults();
+	});
+	
+	$j('#gr').change(function(){
+		gr = $j(this).val();
+		loadResults();
+	});
+	
+	$j('#sc').change(function(){
+		sc = $j(this).val();
+		loadResults();
+	});
+	
+	$j('#yid').change(function(){
+		yid = $j(this).val();
+		loadResults();
+	});
+	
+	$j('#secid').change(function(){
+		secid = $j(this).val();
+		loadResults();
+	});
+});
+</script>
+</head>
+
+<body>
+
+~[wc:teachers_header_css]~[wc:teachers_navigation_css]
+~[SetPostValue:tabname=reportCards]
+~[wc:teachers_nav_css]
+
+<h1>Westborough Report Cards</h1>
+
+<!-- start of content and bounding box -->
+<div class="box-round">
+
+<h2 class="toggle expanded filtersHeader">Filter Options</h2>
+<table class="resultsFilters">
+<tr>
+<td><label style="width:auto;">Pause</label><input type="checkbox" value="1" id="pause" checked /></td>
+<td><label>Student</label>
+<select id="s">
+<option value="">All Students</option>
+~[tlist_sql;
+WITH s AS (
+SELECT  s.id studentid, s.dcid, s.grade_level gr, s.LastFirst std
+FROM Students s
+  INNER JOIN cc ON s.id = cc.studentid
+  INNER JOIN SectionTeacher sect ON cc.sectionid = sect.sectionid
+  INNER JOIN TermBins tb ON cc.schoolid = tb.schoolid
+    AND cc.termid = tb.termid
+WHERE tb.yearid = ~(curyearid)
+  AND sect.teacherid = ~[x:userid]
+~[if.is.a.school]
+  AND s.schoolid = ~(curschoolid)
+[/if.is.a.school]
+)
+SELECT s.studentid, s.gr, s.std
+FROM s
+  INNER JOIN StoredGrades sg ON s.studentid = sg.studentid
+WHERE sg.grade is not null
+  AND CASE
+    WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q1','Q2','M1','S1','Q3','Q4','F1','S2','Y1') THEN 1
+    WHEN sg.grade_level >= 7 AND sg.storecode IN ('T1','T2','T3','Y1') THEN 1
+    ELSE 0
+  END = 1
+
+UNION
+
+SELECT s.studentid, s.gr, s.std
+FROM s
+  INNER JOIN StandardsGrades sg ON s.id = sg.studentid
+WHERE sg.grade_level <= 6
+  AND sg.transaveragescore is not null
+  AND sg.storecode IN ('T1','T2','T3')
+
+ORDER BY std;]
+<option value="~(sid;l)" data-gr="~(gr;l)">~(sName;t) (~(gr;l))</option>
+[/tlist_sql]
+</select>
+</td>
+<td><label>Grade</label>
+<select id="gr">
+<option value="">All Grades</option>
+~[tlist_sql;
+WITH s AS (
+SELECT  s.id studentid, s.dcid, s.grade_level gr, s.LastFirst std
+FROM Students s
+  INNER JOIN cc ON s.id = cc.studentid
+  INNER JOIN SectionTeacher sect ON cc.sectionid = sect.sectionid
+  INNER JOIN TermBins tb ON cc.schoolid = tb.schoolid
+    AND cc.termid = tb.termid
+WHERE tb.yearid = ~(curyearid)
+  AND sect.teacherid = ~[x:userid]
+~[if.is.a.school]
+  AND s.schoolid = ~(curschoolid)
+[/if.is.a.school]
+)
+SELECT sg.grade_level gr
+FROM s
+  INNER JOIN StoredGrades sg ON s.studentid = sg.studentid
+WHERE sg.grade is not null
+  AND CASE
+    WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q1','Q2','M1','S1','Q3','Q4','F1','S2','Y1') THEN 1
+    WHEN sg.grade_level >= 7 AND sg.storecode IN ('T1','T2','T3','Y1') THEN 1
+    ELSE 0
+  END = 1
+
+UNION
+
+SELECT sg.grade_level gr
+FROM s
+  INNER JOIN StandardsGrades sg ON s.id = sg.studentid
+WHERE sg.grade_level <= 6
+  AND sg.transaveragescore is not null
+  AND sg.storecode IN ('T1','T2','T3')
+
+ORDER BY gr;]
+<option value="~(gr;l)">~(gr;l)</option>
+[/tlist_sql]
+</select>
+</td>
+<td><label>Term</label>
+<select id="sc">
+<option value="Q1">T1/Q1</option>
+<option value="Q2">T2/Q2</option>
+<option value="Q3">T3/Q3</option>
+<option value="Q4">Q4</option>
+</select>
+</td>
+<td><label>Year</label>
+<select id="yid">
+<option value="">All Years</option>
+~[tlist_sql;
+SELECT DISTINCT ter.yearid, ter.name termName
+FROM StoredGrades sg
+  INNER JOIN cc ON sg.studentid = cc.studentid
+  INNER JOIN SectionTeacher sect ON cc.sectionid = sect.sectionid
+  INNER JOIN Terms ter ON substr(sg.termid,1,2) = ter.yearid
+WHERE  sect.teacherid = ~[x:userid]
+  AND ter.isyearrec = 1
+ORDER BY ter.yearid desc;]
+<option value="~(yid;l)">~(schYr;t)</option>
+[/tlist_sql]
+</select>
+</td>
+<td><label>Section</label>
+<select id="secid">
+<option value="">Any Section</option>
+~[tlist_sql;
+SELECT sec.id secid, crs.course_name crsName, crs.course_number crsNum, sec.section_number secNum
+FROM Sections sec
+  INNER JOIN Courses crs ON sec.course_number = crs.course_number
+  INNER JOIN sectionTeacher sect ON sec.id = sect.sectionid
+  INNER JOIN Terms ter ON sec.termid = ter.id
+    AND sec.schoolid = ter.schoolid
+  INNER JOIN Terms cter ON ter.schoolid = cter.schoolid
+    AND ter.yearid = cter.yearid
+    AND ter.firstday < cter.lastday
+    AND ter.lastday > cter.firstday
+WHERE sect.teacherid = ~[x:userid]
+  AND cter.id = ~(curtermid)
+  AND cter.schoolid = ~(curschoolid)
+ORDER BY crsName, crsNum, secNum;]
+<option value="~(secid;l)">~(crsname;t) (~(crsnum;t).~(secnum;t))</option>
+[/tlist_sql]
+</select>
+</td>
+</tr>
+</table>
+
+<!-- BEGIN Report Card -->
+<div id="common"></div>
+<div id="status"></div>
+<div id="results"></div>
+<!-- END Report Card -->
+
+</div>
+
+~[wc:teachers_footer_css]
+
+</body>
+</html>
+[/if#pageaction]
+
+~[if#loadResults.~(gpv.action)=loadResults]
+
+<div id="reportsToShow">
+~[tlist_sql;
+WITH x AS (
+SELECT cc.studentid
+FROM SectionTeacher sect
+  INNER JOIN cc ON sect.sectionid = cc.sectionid
+  INNER JOIN terms ter ON cc.termid = ter.id AND cc.schoolid = ter.schoolid
+  INNER JOIN terms cter ON ter.yearid = cter.yearid
+    AND ter.schoolid = cter.schoolid
+    AND ter.firstday < cter.lastday
+    AND ter.lastday > cter.firstday
+WHERE sect.teacherid = ~[x:userid]
+  AND cter.id = ~(curtermid)
+~[if#s.~(gpv.s;sqlText)#]AND cc.studentid = ~(gpv.s;num)[/if#s]
+~[if#secid.~(gpv.s;sqlText)#]AND sect.sectionid = ~(gpv.s;num)[/if#secid]
+)
+SELECT s.dcid, s.lastfirst, sgTer.yearid,  
+  '~(gpv.sc;sqlText)' sc,
+  sg.grade_level gr, 'trc' ts
+FROM x
+  INNER JOIN Students s ON x.studentid = s.id
+  INNER JOIN StoredGrades sg ON x.studentid = sg.studentid
+  INNER JOIN Terms sgTer ON sg.schoolid = sgTer.schoolid AND sg.termid = sgTer.id
+  INNER JOIN cc ON s.id = cc.studentid
+  INNER JOIN SectionTeacher sect ON cc.sectionid = sect.sectionid
+  INNER JOIN Terms ter ON cc.schoolid = ter.schoolid
+  	AND cc.termid = ter.id
+  INNER JOIN Terms cTer ON cTer.schoolid = ~(curschoolid)
+  	AND cter.id = ~(curtermid)
+    AND ter.firstday < cTer.lastday
+    AND ter.lastday > cTer.firstday
+WHERE sect.teacherid = ~[x:userid]
+  AND ter.yearid = ~(curyearid)
+  AND sg.grade is not null
+  AND sg.grade_level >= 7
+~[if#yid.~(gpv.yid;sqlText)#]AND sgTer.yearid = ~(gpv.yid;num)[/if#yid]
+~[if#gr.~(gpv.gr;sqlText)#]AND sg.grade_level = ~(gpv.gr;num)[/if#gr]
+  AND CASE 
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q1' AND sg.storecode IN ('Q1','T1') THEN 1
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q2' AND sg.storecode IN ('Q2','T2','M1','S1') THEN 1
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q3' AND sg.storecode IN ('Q3','T3') THEN 1
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q4' AND sg.storecode IN ('Q4','F1','S2') THEN 1
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q1' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 10 and 12 THEN 1
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q2' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 1 and 2 THEN 1
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q3' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 3 and 4 THEN 1
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q4' AND ~(gpv.gr;num) >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 5 and 6 THEN 1
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q4' AND sg.grade_level >= 9 AND sg.storecode = 'Y1' THEN 1
+  	WHEN replace('~(gpv.sc;sqlText)','T','Q') = 'Q3' AND sg.grade_level >= 7 AND sg.storecode = 'Y1' THEN 1
+  	ELSE 0
+  END = 1
+ 
+UNION
+
+SELECT
+  s.dcid sdcid,
+  s.LastFirst std,
+  sg.yearid yid,
+  '~(gpv.sc;sqlText)' sc,
+  MAX(sg.grade_level) gr, 'src' ts
+FROM s
+  INNER JOIN StandardsGrades sg ON s.dcid = sg.studentid
+WHERE sg.transaveragescore is not null
+  AND sg.grade_level < 7
+~[if#yid.~(gpv.yid;sqlText)#]AND sg.yearid = ~(gpv.yid;num)[/if#yid]
+~[if#gr.~(gpv.gr;sqlText)#]AND sg.grade_level = ~(gpv.gr;num)[/if#gr]
+~[if#q1.~(gpv.sc;sqlText)=Q1]AND sg.storecode = 'T1'[/if#q1]
+~[if#q2.~(gpv.sc;sqlText)=Q2]AND sg.storecode = 'T2'[/if#q2]
+~[if#q3.~(gpv.sc;sqlText)=Q3]AND sg.storecode = 'T3'[/if#q3]
+~[if#q4.~(gpv.sc;sqlText)=Q4]AND sg.storecode = 'T3'[/if#q4]
+GROUP BY s.dcid, s.LastFirst, sg.yearid, sg.storecode
+
+ORDER BY s.lastfirst
+]
+<div class="reportCardDiv reportCard" data-cnt="~(count;-)" data-sdcid="~(sdcid;l)" data-std="~(std;t)" data-yearid="~(yearid;t)" data-sc="~(sc;t)" data-gr="~(gr;l)" data-action="~(action;t)" id="reportCardDiv~(sdcid;l)~(yearid;t)"></div>
+
+<div class="pageafter reportcard" data-cnt="~(count;-)">
+	<div class="noprint" style="border-top: thin dotted"></div>
+</div>
+[/tlist_sql]
+</div>
+
+[/if#loadResults]

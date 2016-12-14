@@ -1,0 +1,181 @@
+table.resultsFilters, table.resultsFilters label {
+	width:					auto;
+}
+table.resultsFilters select {
+	width:					auto;
+	vertical-align:			auto;
+}
+div#status {
+	border-bottom: 			1px solid #CCC;
+}
+div.container td {
+}
+table.grid td, table.grid tbody tr:nth-child(odd)>td {
+    border:                 1px solid black;
+    line-height:            1em;
+}
+table.grid.attTbl tbody tr:nth-child(odd)>td, table.grid.headerTbl tbody tr:nth-child(odd)>td {
+	background-color: 		#fff !important;
+}
+table.grid.gradestable tbody tr:nth-child(odd)>td {
+	background-color: 		#042E58;
+	color:					#FFF;
+}
+.headerTbl {
+    width:                  100%;
+}
+.stdName {
+    font-size:              18px;
+    line-height:            20px;
+}
+.schoolName {
+	font-weight:			bolder;
+	font-size:				18px;
+	line-height:			20px;
+}
+th {
+	background-color: 		#770022;
+	color:					#FFF;
+}
+.hsgrade {
+	width:					60px;
+}
+.msgrade {
+	width:					60px;
+}
+.k8grade {
+	width:					48px;
+}
+.lvl,
+.t1,
+.t2,
+.t3,
+.t4,
+.x1,
+.x2,
+.s1,
+.s2,
+.y1 {
+    text-align:             center;
+}
+div.attsummary {
+    float:                  right;
+    padding-right:          50px;
+}
+.attTbl {
+    width:                  auto;
+}
+.attTbl td {
+    padding:                2px 5px;
+}
+
+/* Standards settings */
+.tbl {
+	display: 				table;
+	width: 					99%;
+}
+.tablerow {
+	display: 				table-row;
+}
+.col, .colGap {
+	display: 				table-cell;
+	vertical-align: 		top;
+	max-height:				7.0in;
+}
+div.colGap {
+	width:					4% !important;
+}
+
+.k2Header1, .k2Header2 {
+	border:					solid thin;
+}
+div.container.g36 .behaviorkey, 
+div.container.g36 div.col.p1c1 .performancekey,
+div.container.g36 table.attTbl,
+div.container.g36 .standardgrades {
+	width: 					95%;
+}
+div.container.k2 .behaviorkey,
+div.container.k2 table.attTbl {
+	width: 					100%;
+}
+.standardcomments tr.t1 td,
+.standardcomments tr.t2 td,
+.standardcomments tr.t3 td {
+    text-align:             left;
+}
+.behaviorkey thead td, 
+.performancekey thead td {
+	font-weight: 			bold;
+	text-align: 			center;
+}
+.behaviorkey tbody td, 
+.performancekey tbody td,
+.promoted tbody td,
+.standardgrades tbody td,
+.standardcomments tbody td {
+	background-color: 		#fff !important;
+}
+.behaviorkey,
+.performancekey,
+.standardgrades {
+	margin-bottom: 			10px !important;
+}
+.standardgrades thead td {
+	font-weight: 			bold;
+}
+
+div.src .t1,
+div.src .t2,
+div.src .t3 {
+	width: 					30px;
+}
+@media screen
+{
+	div.pageafter div.noprint {
+		border-top: 		thin dotted;
+	}
+}
+@media print
+{
+	#branding-powerschool,	#print-school, #legal, h1, .account-photo, p, .filtersHeader, .resultsFilters, div#status, div#header.group, div#usercontext-bar, ul.tabs, ul#tools2, table#pluginLinkDrawerTable {
+		display:			none !important;
+	}
+	.box-round {
+		border-style:		none;
+		border-color:		transparent;
+	}
+	#nav-main {
+		width:				1px!important;
+	}
+    p, td, th {
+	    font-size:      	10px;
+	    line-height:    	1em;
+    }
+    table.grid.standardgrades td {
+    	padding: 			2px;
+    }
+    .hsgrade {
+	    width:				48px;
+    }
+    .msgrade {
+	    width:				60px;
+    }
+    .k8grade {
+	    width:				48px;
+    }
+    
+    table.grid.standardgrades {
+    	page-break-inside:  avoid;
+    }
+}
+@page {
+    margin-top:             .1in;
+    margin-bottom:          .1in;
+    margin-left:            .07in;
+    margin-right:           .07in;
+}
+@page land { size: landscape }
+@page port { size: portrait }
+div.landscape { page : land }
+div.portrait { page : port }

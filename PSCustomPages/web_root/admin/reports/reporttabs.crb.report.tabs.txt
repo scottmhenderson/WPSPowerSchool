@@ -1,0 +1,15 @@
+<script type="text/javascript">
+	var reptype = '~[gpv:repType]', setuptab;
+	if (reptype == 'setup') {
+		setuptab = '#';
+	} else {
+		setuptab = 'reportsetup.html';
+	}
+	$j('a[href*="'+setuptab+'"]').closest('li').after(
+		'<!-- BEGIN link for CPM tabs -->\
+		<li class="~[if.~[gpv:repType]=customreports41]selected[/if]" id="customreports">\
+			<a href="~[if.~[gpv:repType]=customreports41]#[else]/admin/reports/CRB/customreports.html[/if]">Custom Reports</a>\
+		</li>\
+		<!-- END link for CPM tabs -->'
+	);
+</script>

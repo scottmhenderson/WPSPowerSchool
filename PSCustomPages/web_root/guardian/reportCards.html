@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+~[if#1.pref.reportcards~(curschoolid)=1]~[redirect:/guardian/home_not_available.html][/if#1]
+<title>Report Cards</title>
+<meta http-equiv="expires" content="0">
+
+~[wc:guardian_header_yui]
+
+<h1>Report Cards</h1>
+<!-- title -->
+<link href="/clg/reportcards/westboroughReportCard.css?modified=20151130" rel="stylesheet">
+<script type="text/javascript" src="/clg/reportcards/process.js?modified=20151215"></script>
+<script type="text/javascript">
+$j(document).ready(function(){
+	$j('div#legal p').html('Copyright&copy; 2011-2015 Computer Logic Group, Inc. All rights reserved.');
+	$j('#print-disclaimer').html('<center>If you would like an official printout of this report card, please contact the school office.<center>');
+	$j('ul#yearTabs li:last').addClass('selected');
+	var frn = '~(studentfrn)',
+		yearTabs = $j('ul#yearTabs li'),
+		scTabs = $j('ul#scTabs li'),
+		selectedAction = $j('ul#scTabs li:last a').data('action'),
+		selectedGr = $j('ul#scTabs li:last a').data('gr'),
+		selectedYear = $j('ul#yearTabs li:last a').data('yid'),
+		selectedSC = '',yr = 1990+selectedYear,
+		runcount = 0;
+	yearClick();
+	
+	$j('div#common').hide().load('reportCardData.html?action=common');
+	
+	$j('ul#yearTabs').on('click','li:not(.noClick) a', function(e){
+		e.preventDefault();
+		if (selectedYear != $j(this).data('yid')) {
+			$j('ul#yearTabs li.selected').removeClass('selected');
+			selectedYear = $j(this).data('yid');
+			yr = 1990+selectedYear;
+			$j(this).parent().addClass('selected');
+			yearClick();
+		}
+	});
+	
+	$j('ul#scTabs').on('click','li:not(.noClick) a', function(e){
+		e.preventDefault();
+		if (selectedSC != $j(this).data('sc')) {
+			$j('ul#scTabs li.selected').removeClass('selected');
+			selectedSC = $j(this).data('sc');
+			selectedAction = $j(this).data('action');
+			selectedGr = $j(this).data('gr');
+			$j(this).parent().addClass('selected');
+			scClick();
+		}
+	});
+	
+	function yearClick(){
+		//remove all sc tabs
+		$j('ul#scTabs li').remove();
+		//add back only the sc tabs that match the year
+		scTabs.each(function(){
+			if ( $j(this).hasClass(selectedYear) ){
+				$j('ul#scTabs').append( $j(this) );
+			}
+		});
+		//select the last one showing
+		$j('ul#scTabs li.selected').removeClass('selected');
+		$j('ul#scTabs li:last').addClass('selected');
+		selectedSC = $j('ul#scTabs li:last a').data('sc');
+		selectedAction = $j('ul#scTabs li:last a').data('action');
+		selectedGr = $j('ul#scTabs li:last a').data('gr');
+		
+		scClick();
+	}
+	
+	function scClick(){
+		$j('ul.tabs li').addClass('noClick');
+		$j('div#status').html('<div id="directions" class="feedback-alert">Searching for your reports for '+yr+'-'+(yr+1)+' '+selectedSC+'</div>').show();
+		$j('div#results').hide().load('reportCardData.html?action='+selectedAction+'&frn='+frn+'&yid='+selectedYear+'&sc='+selectedSC+'&yr='+yr+'&gr='+selectedGr);
+		runcount = 1;
+		$j( document ).ajaxStop(function(){
+			if (runcount == 1) { runcount = 0;processReports('~[directory]'); }
+			$j('div#status').hide();
+			$j('div#results').show();
+			$j('.noClick').removeClass('noClick');
+		});
+	}
+});
+</script>
+
+<!-- BEGIN Dynamic Year tabs -->
+<ul class="tabs" id="yearTabs"> 
+~[tlist_sql;
+SELECT ter.yearid, (1990+ter.yearid)||'-'||(1991+ter.yearid) yr
+FROM StoredGrades sg
+  INNER JOIN Terms ter ON sg.schoolid = ter.schoolid AND substr(sg.termid,1,2) = ter.yearid AND ter.isyearrec = 1
+WHERE sg.studentid = ~(curstudid)
+  AND sg.grade is not null
+  AND CASE
+    WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q1','Q2','M1','S1','Q3','Q4','F1','S2','Y1') THEN 1
+    WHEN sg.grade_level >= 7 AND sg.storecode IN ('T1','T2','T3','Y1') THEN 1
+    ELSE 0
+  END = 1
+
+UNION
+
+SELECT sg.yearid, (1990+sg.yearid)||'-'||(1991+sg.yearid) yr
+FROM Students s
+  INNER JOIN StandardsGrades sg ON s.id = sg.studentid
+WHERE s.id = ~(curstudid)
+  AND sg.transaveragescore is not null
+  AND sg.storecode IN ('T1','T2','T3')
+  AND sg.grade_level <= 6
+
+ORDER BY yearid]
+	<li><a href="#" data-yid="~(yearid;l)">~(term;t)</a></li>
+[/tlist_sql]
+</ul>
+<!-- END Dynamic Year tabs -->
+
+<!-- BEGIN Dynamic Store Code tabs -->
+<ul class="tabs" id="scTabs">
+~[tlist_sql;
+SELECT DISTINCT ter.yearid, 
+  CASE 
+    WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q1') THEN 'Q1'
+    WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q2','M1','S1') THEN 'Q2'
+    WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q3') THEN 'Q3'
+    WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q4','F1','S2') THEN 'Q4'
+    WHEN sg.grade_level >= 9 AND ter.portion = 1 AND sg.storecode = 'Y1' THEN 'Q4'
+    WHEN sg.grade_level >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 10 and 12 THEN 'Q1'
+    WHEN sg.grade_level >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 1 and 2 THEN 'Q2'
+    WHEN sg.grade_level >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 3 and 4 THEN 'Q3'
+    WHEN sg.grade_level >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 5 and 6 THEN 'Q4'
+    WHEN sg.grade_level BETWEEN 7 and 8 AND sg.storecode IN ('T1') THEN 'Q1'
+    WHEN sg.grade_level BETWEEN 7 and 8 AND sg.storecode IN ('T2') THEN 'Q2'
+    WHEN sg.grade_level BETWEEN 7 and 8 AND sg.storecode IN ('T3','Y1') THEN 'Q3'
+  END storecode, 'trc' ts, sg.grade_level,
+  CASE 
+      WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q1') THEN 'Q1'
+      WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q2','M1','S1') THEN 'Q2'
+      WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q3') THEN 'Q3'
+      WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q4','F1','S2') THEN 'Q4'
+      WHEN sg.grade_level >= 9 AND ter.portion = 1 AND sg.storecode = 'Y1' THEN 'Q4'
+      WHEN sg.grade_level >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 10 and 12 THEN 'Q1'
+      WHEN sg.grade_level >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 1 and 2 THEN 'Q2'
+      WHEN sg.grade_level >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 3 and 4 THEN 'Q3'
+      WHEN sg.grade_level >= 9 AND ter.portion > 1 AND to_number(to_char(ter.lastday,'MM')) between 5 and 6 THEN 'Q4'
+      WHEN sg.grade_level BETWEEN 7 and 8 AND sg.storecode IN ('T1') THEN 'T1'
+      WHEN sg.grade_level BETWEEN 7 and 8 AND sg.storecode IN ('T2') THEN 'T2'
+      WHEN sg.grade_level BETWEEN 7 and 8 AND sg.storecode IN ('T3','Y1') THEN 'T3'
+  END sclbl
+FROM StoredGrades sg
+  INNER JOIN Terms ter ON sg.schoolid = ter.schoolid AND sg.termid = ter.id
+WHERE sg.studentid = ~(curstudid)
+  AND sg.grade is not null
+  AND CASE
+    WHEN sg.grade_level >= 9 AND sg.storecode IN ('Q1','Q2','M1','S1','Q3','Q4','F1','S2','Y1') THEN 1
+    WHEN sg.grade_level >= 7 AND sg.storecode IN ('T1','T2','T3','Y1') THEN 1
+    ELSE 0
+  END = 1
+
+UNION
+
+SELECT sg.yearid, 
+  sg.storecode, 'src' ts, sg.grade_level,
+  sg.storecode sclbl
+FROM Students s
+  INNER JOIN StandardsGrades sg ON s.id = sg.studentid
+WHERE s.id = ~(curstudid)
+  AND sg.transaveragescore is not null
+  AND sg.storecode IN ('T1','T2','T3')
+  AND sg.grade_level <= 6
+  
+ORDER BY yearid, storecode]
+	<li class="~(yearid;l)"><a href="#" class="~(yearid;l)" data-sc="~(sc;t)" data-action="~(x;t)" data-gr="~(gr;l)">~(sclbl;t)</a></li>
+[/tlist_sql]
+</ul>
+<!-- END Dynamic Store Code tabs -->
+
+<!-- BEGIN Report Card -->
+<div id="common"></div>
+<div id="status"></div>
+<div id="results"></div>
+<!-- END Report Card -->
+
+<input id="activeNav" type="hidden" value="#btn-reportCards"/>
+~[wc:guardian_footer_yui]
+</body>
+</html>

@@ -1,0 +1,7 @@
+<script type="text/javascript">
+	$j("div#nav-main ul:first li a[href*='reportsall.html']").closest('li').after(
+		'<!-- BEGIN Report Cards Customization -->\
+		<li ~[if.~[gpv:tabname]=reportCards]class="selected"[/if]><a href="/teachers/reportCards/reportCards.html?frn=~(userfrn)" id="navReportCards" title="Report Cards">Report Cards</a></li>\
+		<!-- END Report Cards Customization -->'
+	);
+</script>

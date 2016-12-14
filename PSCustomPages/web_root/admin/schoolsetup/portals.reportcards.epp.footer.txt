@@ -1,0 +1,48 @@
+~[if.district.office]
+
+<div id="reportCards">
+<table>
+<tr data-schid="~(school_number)">~[tlist;schools;school_number>0;alternatecolor;sortcmd;sortorder,&gt;,name,&gt;]
+<!-- BEGIN Report Cards option -->
+<td class="reportCards"><input type="checkbox" name="[pref]reportcards~(school_number)" value="1" id="reportCards"></td>
+<!-- END Report Cards option -->
+</tr>
+</table>
+</div>
+<script type="text/javascript">
+	$j('thead tr:first th.grHistory').after(
+		'<!-- BEGIN Report Cards option -->\
+		<th class="reportCards">Report Cards</th>\
+		<!-- END Report Cards option -->'
+	);
+	$j('thead tr:eq(1) th.grHistory').after(
+		'<!-- BEGIN Report Cards option -->\
+		<th class="reportCards"><input type="checkbox" value="1" id="reportCards"></th>\
+		<!-- END Report Cards option -->'
+	);
+	$j('thead tr:eq(1) th.firstpg select option[value="termgrades.html"]').after('<option value="reportCards.html">Report Cards</option>');
+	
+	$j('tbody tr').each(function(){
+		var schid = $j(this).data('schid');
+		$j(this).find('td.firstpg select option[value="termgrades.html"]').after('<option value="reportCards.html">Report Cards</option>');
+		$j('div#reportCards table tr[data-schid="'+schid+'"]').contents().insertAfter($j(this).find('td.grHistory'));
+	}); 
+	$j('div#reportCards').remove();
+</script>
+
+[else]
+
+<script type="text/javascript">
+	$j('tr.grHistory').after(
+		'<!-- BEGIN Report Cards option -->\
+		<tr class="reportCards">\
+		<td>Report Cards</td>\
+		<td><input type="checkbox" name="[pref]reportcards~(curschoolid)" value="1" id="reportCards"></td>\
+		</tr>\
+		<!-- END Report Cards option -->'
+	);
+	
+	$j('tr.firstpg select option[value="termgrades.html"]').after('<option value="reportCards.html">Report Cards</option>');
+</script>
+
+[/if.district.office]
