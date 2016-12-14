@@ -581,7 +581,15 @@ FROM (select * from s where rownum = 1) s
 <tr>
 <td>4</td>
 <td>Advanced</td>
+~[if#ismps.~(gpv.gr;num)>3]
+    ~[if#is1617.~(gpv.yid;num)>25]
+<td>Student work consistently and independently demonstrates advanced understanding beyond the grade level benchmark</td>
+    [else#is1617]
 <td>Student work consistently demonstrates advanced understanding of grade level benchmark</td>
+    [/if#is1617]
+[else#ismps]
+<td>Student work consistently demonstrates advanced understanding of grade level benchmark</td>
+[/if#ismps]
 </tr>
 <tr>
 <td>3</td>
@@ -595,8 +603,18 @@ FROM (select * from s where rownum = 1) s
 </tr>
 <tr>
 <td>1</td>
+~[if#ismps.~(gpv.gr;num)>3]
+    ~[if#is1617.~(gpv.yid;num)>25]
+<td>Beginning</td>
+<td>Student work does not yet meet grade level benchmark</td>
+    [else#is1617]
 <td>Limited</td>
 <td>Student work does not meet grade level benchmark</td>
+    [/if#is1617]
+[else#ismps]
+<td>Limited</td>
+<td>Student work does not meet grade level benchmark</td>
+[/if#ismps]
 </tr>
 <tr>
 <td></td>
