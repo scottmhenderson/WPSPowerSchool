@@ -12,6 +12,32 @@
 <link href="/clg/reportcards/westboroughReportCard.css?modified=20151130" rel="stylesheet">
 <script type="text/javascript" src="/clg/reportcards/process.js?modified=20151215"></script>
 <script type="text/javascript">
+
+	// Don't circumvent acknowledgment screen if navigate to student from
+	// a student in a school that doesn't use the acknowledgment screen.
+	var schid = ~([Students]schoolid);
+	if( schid == 3210005 || schid == 3210010 || schid == 3210025 || schid == 3210045 ) {
+
+		// Get the current term's start day. 
+		// Since we're in a new term, all ReportCardReceived dates less than 
+		// this date are from the prior term and obsolete.
+		var terms = [~[tlist_sql;select firstday from terms where schoolid=~(curschoolid) and yearid=~(curyearid) and id=~(curtermid)]"~(1)",[/tlist_sql]];
+		// stray slash above confuses notepad++ code formatting, this fixes	
+		var threshold;
+		if( terms.length > 0 ) {
+			threshold = new Date(terms[0]);
+		}
+		var parentdate = new Date ("~([Students.U_Students_Signoff]ReportCardReceived)");
+		
+		if( threshold === undefined ) {
+			// something is amiss if can't find the current term start date
+			window.alert("There has been a technical error with report card acknowledgment, please notify your school, thanks.");
+		} else if ( isNaN(parentdate.valueOf())
+					|| (parentdate <= threshold) ) {
+			window.location.replace("reportCardAcknowledge.html");
+		}
+	}
+
 $j(document).ready(function(){
 	$j('div#legal p').html('Copyright&copy; 2011-2015 Computer Logic Group, Inc. All rights reserved.');
 	$j('#print-disclaimer').html('<center>If you would like an official printout of this report card, please contact the school office.<center>');

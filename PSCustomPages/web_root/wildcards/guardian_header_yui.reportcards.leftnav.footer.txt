@@ -4,6 +4,52 @@
 <script type="text/javascript">
 $j(document).ready(function(){
 	var l = $j('div#nav-main > ul');
-	~[if.pref.reportcards~(curschoolid)=1][else]l.find('li#btn-gradesAttendance').after('<li id="btn-reportCards"><a href="/guardian/reportcards.html">Report Cards</a></li>');[/if]
+	~[if#p.pref.reportcards~(curschoolid)=1]
+	[else#p]
+		var showviewscreen = false;
+	    ~[if.~(curschoolid)=3210005]
+			showviewscreen = true;
+		[/if]
+	    ~[if.~(curschoolid)=3210010]
+			showviewscreen = true;
+		[/if]
+	    ~[if.~(curschoolid)=3210025]
+			showviewscreen = true;
+		[/if]
+	    ~[if.~(curschoolid)=3210045]
+			showviewscreen = true;
+		[/if]
+		
+		if( showviewscreen ) {
+			showviewscreen = false;
+	
+			// Get the current term's start day. 
+			// Since we're in a new term, all ReportCardReceived dates less than 
+			// this date are from the prior term and obsolete.
+			var terms = [~[tlist_sql;select firstday from terms where schoolid=~(curschoolid) and yearid=~(curyearid) and id=~(curtermid)]"~(1)",[/tlist_sql]];
+			// stray slash above confuses notepad++ code formatting, this fixes	
+			var threshold;
+			if( terms.length > 0 ) {
+				threshold = new Date(terms[0]);
+			}
+			var parentdate = new Date ("~([Students.U_Students_Signoff]ReportCardReceived)");
+			var showviewscreen = false;
+		
+			if( threshold === undefined ) {
+				// something is amiss if can't find the current term start date
+				window.alert("There has been a technical error with report card acknowledgment, please notify your school, thanks.");
+			} else if ( isNaN(parentdate.valueOf())
+						|| (parentdate <= threshold) ) {
+				// No date, or date is for last term, show acknowledgment screen
+				showviewscreen = true;
+			}	
+		}
+
+		if( showviewscreen ) {
+			l.find('li#btn-gradesAttendance').after('<li id="btn-reportCards"><a href="/guardian/reportCardAcknowledge.html">Report Cards</a></li>');
+		} else {
+			l.find('li#btn-gradesAttendance').after('<li id="btn-reportCards"><a href="/guardian/reportcards.html">Report Cards</a></li>');
+		}
+	[/if#p]
 });
 </script>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+~[if#1.pref.reportcards~(curschoolid)=1]~[redirect:/guardian/home_not_available.html][/if#1]
+~[if#5.~(curschoolid)#3210005]
+	~[if#10.~(curschoolid)#3210010]
+		~[if#25.~(curschoolid)#3210025]	
+			~[if#45.~(curschoolid)#3210045]
+				~[redirect:/guardian/reportCards.html]
+			[/if#45]
+		[/if#25]
+	[/if#10]
+[/if#5]
+<!-- If you've done your confirmation for one student, navigate to a student
+     for whom you haven't confirmed, don't confirm, then return here, you'll
+	 get confirmation screen instead report card screen. This seems both
+	 unlikely and harmless, so not adding the date check code here. Can either
+	 confirm again, or just click the Report Cards screen button.
+-->
+	 
+<title>View Report Card</title>
+
+~[wc:guardian_header_yui]
+
+<h1>View Report Card</h1>
+
+<script type="text/javascript">
+
+    $j(document).ready(function() {
+		$j('#rcrDate').val("~[short.date]");
+    });
+		
+</script>
+
+<body>
+
+<div id="signOffs" class="box-round group">
+<form action="reportCards.html" method="POST" id="viewReportCard" name="viewReportCard">
+<div id="buttonRow"> <!-- removed class="button-row" to get left alignment -->
+<input type="hidden" name="ac" value="autosendupdate" />
+~[if#isguard.isguardian]
+<button type="submit" value="Submit" id=submitbutton">Click here to display report card</button>
+[else#isguard]
+<p><b>Please have your parent/guardian sign into the Parent Portal and release the report card by clicking the "display report card" button.</b></p>
+[/if#isguard]
+</div> 
+
+
+<div class="hide">
+<input type="text" name="[Students.U_Students_Signoff]ReportCardReceived" id="rcrDate" value="" size="10" class="psDateWidget" placeholder="MM/DD/YYYY">
+</div>
+</form>
+</div>
+
+<!-- Sets the navigation highlighting: the value is the ID value of the navigation element you want to highlight--> 
+<input id="activeNav" type="hidden" value="#btn-reportCards"/>
+~[wc:guardian_footer_yui]
+
+</body>
+</html>
