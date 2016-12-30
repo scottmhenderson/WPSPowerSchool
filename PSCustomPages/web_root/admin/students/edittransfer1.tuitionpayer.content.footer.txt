@@ -1,0 +1,73 @@
+<!-- When edit a student current enrollment
+     * Include a half-day K checkbox
+     * If a full-day kindergartner, set TuitionPayer to true
+     * Else set TuitionPayer to false
+-->
+
+<script type="text/javascript" language="JavaScript">
+
+    $j(document).ready(function() {
+
+
+        $j('#selectGradeLevel').after( $j('#hdkSpan') );
+        $j('#hdkSpan').after( $j('#tpSpan') );
+
+        // init TuitionPayer
+        if( "KG" == $j( '#selectGradeLevel option:selected' ).text() ) {
+            $j('#hdkSpan').show();
+            if( $j( '#hdkSpan' ).is(':checked') ) {
+                $j('#tpSpan').html("<br>Tuition Payer: No");
+            } else {
+                $j('#tpSpan').html("<br>Tuition Payer: Yes");
+            }
+        } else {
+            $j('#hdkSpan').hide();
+            $j('#tpSpan').html("<br>Tuition Payer: NA");
+        }
+
+
+        // when change grade-level, if now K (0), enable half-day K
+        // and default TuitionPayer to true. Else the inverse.
+        $j('#selectGradeLevel').on("change", function() {
+            var tpval = 0;
+            if( $j( this ).val() == 0 ) {
+                tpval = 1;
+                $j('#hdkSpan').show();
+                $j('#tpSpan').html("<br>Tuition Payer: Yes");
+            } else {
+                $j('#hdkCheck').prop( "checked", false );
+                $j('#hdkSpan').hide();
+                $j('#tpSpan').html("<br>Tuition Payer: NA");
+            }
+            $j("#tuitionpayer").val(tpval);
+        });
+
+        // when change half-day K, update TuitionPayer
+        $j('#hdkCheck').on("change", function() {
+            var tpval = 1;
+            if( $j( this ).is(':checked') ) {
+                tpval = 0;
+                $j('#tpSpan').html("<br>Tuition Payer: No");
+            } else {
+                $j('#tpSpan').html("<br>Tuition Payer: Yes");
+            }
+            $j("#tuitionpayer").val(tpval);
+        });
+
+    });
+
+</script>
+
+<span id="hdkSpan">
+    &emsp;<input type="checkbox" id="hdkCheck" name="[Students]parttimestudent" value="">Half-day K (part-time student indicator)
+</span>
+<!--span id="tpSpan">
+    <p id=tpP>Tuition Payer: Yes</p>
+</span-->
+<span id="tpSpan">
+    <br>Tuition Payer: Yes
+</span>
+
+<div class="hide" id="tpDiv">
+    <td><input type="text" name="[students]tuitionpayer"  value="" size="10" maxlength="1" id="tuitionpayer"></td>
+</div>

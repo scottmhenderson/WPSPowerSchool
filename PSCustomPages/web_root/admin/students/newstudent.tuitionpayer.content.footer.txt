@@ -1,0 +1,48 @@
+<!-- Add a message to ask registrar to edit enrollment to set half-day K and TuitionPayer
+     after registration.
+     Also a "Tuitioned In" alert if zip not 01581.
+
+     Tried to default TuitionPayer, and add a control for half-day K here.  Unfortunately,
+     can't add fields to this page, according to a thread in the national psug yahoo group.
+     There is no "current student", there is validation and family checking.
+     Students are moved from temp fields to real fields later in the processing in a place I haven't found.
+-->
+
+<script type="text/javascript" language="JavaScript">
+
+    $j(document).ready(function() {
+
+        $j('[name="grade_level"]').after( $j('#hdkSpan') );
+
+        // init message
+        if( "KG" == $j( '[name="grade_level"] option:selected' ).text() ) {
+            $j('#hdkSpan').show();
+        } else {
+            $j('#hdkSpan').hide();
+        }
+
+        // when change grade-level, if now K (0), enable message
+        $j('[name="grade_level"]').on("change", function() {
+            if( $j( this ).val() == 0 ) {
+                $j('#hdkSpan').show();
+            } else {
+                $j('#hdkSpan').hide();
+            }
+        });
+
+        // Alert if zip not 01581 and DOE013 not 09
+        $j('#pzip').on("change",function() {
+            if( $j(this).val() != "" && $j(this).val() != "01581" 
+                && $j('[name="MA_EnrollCode"]').val() == "01") {
+                alert ("Not 01581. Is this a teacher's child? If yes, set Reason for Enrollment to 'Tuitioned in - Waived by local agreement (09)'");
+            }
+        });
+
+
+    });
+
+</script>
+
+<span id="hdkSpan">
+    &emsp;<font color="red"><b>Remember to edit current enrollment via Transfer Info to set half-day K and TuitionPayer</b></font>
+</span>

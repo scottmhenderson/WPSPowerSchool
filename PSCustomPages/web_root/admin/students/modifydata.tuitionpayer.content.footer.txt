@@ -1,0 +1,17 @@
+<!-- Hides parttime student indicator from Modify Info screen.
+     So I don't have to add the TuitionPayer logic here, which 
+     I added to Transfer Info (edittransfer1) screen.
+-->
+
+<script type="text/javascript" language="JavaScript">
+
+    $j(document).ready(function() {
+
+        $j('[name*="parttimestudent"]').parent().parent().remove();
+
+        // update the zebra striping
+        $j('table').first().children('tbody').children('tr').not('.headerrow').filter(':even').attr('bgcolor','#edf3fe');
+        $j('table').first().children('tbody').children('tr').not('.headerrow').filter(':odd').attr('bgcolor','#ffffff');
+    });
+
+</script>
