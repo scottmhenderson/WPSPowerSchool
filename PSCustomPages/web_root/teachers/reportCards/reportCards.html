@@ -310,7 +310,7 @@ SELECT
   '~(gpv.sc;sqlText)' sc,
   MAX(sg.grade_level) gr, 'src' ts
 FROM s
-  INNER JOIN StandardsGrades sg ON s.dcid = sg.studentid
+  INNER JOIN StandardsGrades sg ON s.id = sg.studentid
 WHERE sg.transaveragescore is not null
   AND sg.grade_level < 7
 ~[if#yid.~(gpv.yid;sqlText)#]AND sg.yearid = ~(gpv.yid;num)[/if#yid]
