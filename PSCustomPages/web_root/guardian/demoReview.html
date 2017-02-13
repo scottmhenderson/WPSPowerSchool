@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Contact Information</title>
+
+~[wc:guardian_header]
+
+<h1>Contact Information: ~(studentname)</h1>
+
+<script type="text/javascript">
+    $j(document).ready(function() {
+    });
+</script>
+
+<!-- title -->
+<body>
+
+<!-- start student content -->
+<div class="box-round group">
+
+<!-- remove class=grid when done with the grid lines -->
+<div class="box-round" style="background-color:#ffffe0">
+<h2>Instructions</h2>
+~[if.~([Students]schoolid)=3210045]
+<font color="red">
+<p>
+The contact information changes returned with your Mill Pond students' first-day packets are being processed.  You should see the changes reflected here in the coming weeks, please check back.  Thanks!
+</p>
+</font>
+[else]
+<p>
+Please call your child's school with any corrections to the information below, or print and send in a corrected version with your child.
+</p>
+[/if]
+</div>
+<table class="grid" border="0" cellspacing="0" cellpadding="4">
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">Student</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.generaldemographics.name]&nbsp;~[text:psx.html.admin_students.generaldemographics.last_first_mi]</td>
+<td>~([Students]lastfirst)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.htmlc.guardian.epp.address]</td>
+<td>~([Students]street)<br>~([Students]city), ~([Students]state) ~([Students]zip)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.htmlc.guardian.epp.home_phone]</td>
+<td>~([Students]home_phone)</td>
+</tr>
+
+<tr bgcolor="#f6f6f6">
+    <td colspan="2" class="bold">Parent 1</td>
+<tr>
+    <td class="bold">~[text:psx.html.admin_students.generaldemographics.name]&nbsp;(Last, First)</td>
+    <td>~([Students]mother)</td>
+</tr>
+<tr>
+    <td class="bold">Relationship</td>
+    <td>~([Students]Parent_1_relationship)&nbsp;&nbsp;(~([Students]Parent_1_legal_status))</td>
+</tr>
+<tr>
+    <td class="bold">Day Phone</td>
+    <td>~([Students]motherdayphone)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.htmlc.guardian.epp.home_phone]</td>
+<td>~([Students]mother_home_phone)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.htmlc.guardian.epp.address]</td>
+<td>Guardian lives with student</td>
+</tr>
+
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">Parent 2</td>
+<tr>
+    <td class="bold">~[text:psx.html.admin_students.generaldemographics.name]&nbsp;(Last, First)</td>
+    <td>~([Students]father)</td>
+</tr>
+<tr>
+    <td class="bold">Relationship</td>
+    <td>~([Students]Parent_2_relationship)&nbsp;&nbsp;(~([Students]Parent_2_legal_status))</td>
+</tr>
+<tr>
+<td class="bold">Day Phone</td>
+<td>~([Students]fatherdayphone)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.htmlc.guardian.epp.home_phone]</td>
+<td>~([Students]father_home_phone)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.htmlc.guardian.epp.address]</td>
+~[if.~([Students]mailing_zip)=""]
+<td>Guardian lives with student</td>
+[else]
+<td>
+	~([Students]mailing_street)<br>
+	~([Students]mailing_city), ~([Students]mailing_state)  ~([Students]mailing_zip)
+</td>
+</tr>
+[/if]
+~[if.1=0]
+<td class="bold">~[text:psx.htmlc.guardian.epp.father_employer]</td>
+<td>~([Students]Father_Employer)</td>
+[/if]
+
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">All Parents</td>
+</tr>
+<tr>
+    <td class="bold">~[text:psx.html.admin_students.generaldemographics.guardian_email](s)</td>
+    <td>~([Students]guardianemail)</td>
+</tr>
+
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">Emergency Contacts</td>
+</tr>
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">~[text:psx.html.admin_students.emergency.contact_]</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.contact_name_last_first]</td>
+<td>~([Students]Emerg_Contact_1)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.relationship]</td>
+<td>~([Students]Emerg_1_Rel)</td>
+</tr>
+<tr>
+<td class="bold">~([Students]Emerg_1_Ptype)&nbsp;#</td>
+<td>~([Students]Emerg_Phone_1)</td>
+</tr>
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">~[text:psx.html.admin_students.emergency.contact_1]</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.contact_name_last_first]</td>
+<td>~([Students]Emerg_Contact_2)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.relationship]</td>
+<td>~([Students]Emerg_2_Rel)</td>
+</tr>
+<tr>
+<td class="bold">~([Students]Emerg_2_Ptype)&nbsp;#</td>
+<td>~([Students]Emerg_Phone_2)</td>
+</tr>
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">~[text:psx.html.admin_students.emergency.contact_2]</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.contact_name_last_first]</td>
+<td>~([Students]Emerg_Contact_3)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.relationship]</td>
+<td>~([Students]Emerg_3_Rel)</td>
+</tr>
+<tr>
+<td class="bold">~([Students]Emerg_3_Ptype)&nbsp;#</td>
+<td>~([Students]Emerg_Phone_3)</td>
+</tr>
+
+
+<!--
+<tr>
+<td class="bold">~[text:psx.htmlc.guardian.epp.mailing_address]</td>
+<td>
+	~([Students]mailing_street)<br>
+	~([Students]mailing_city), ~([Students]mailing_state)  ~([Students]mailing_zip)
+</td>
+</tr>
+-->
+<tr bgcolor="#edf3fe">
+</tr>
+<tr>
+</tr>
+<tr bgcolor="#edf3fe">
+</tr>
+
+</table>
+
+</div>
+
+<!-- end student content -->
+
+<!-- end of title and student content -->
+
+~[wc:guardian_footer]
+</body>
+</html>

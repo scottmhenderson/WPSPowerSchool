@@ -1,0 +1,12 @@
+<style type="text/css">
+#btn-demoreview a {background: url(/images/img/addressbook.png) no-repeat;}
+
+</style>
+<script type="text/javascript">
+$j(document).ready(function(){
+	var l = $j('div#nav-main > ul');
+
+    l.find('li#btn-gradesAttendance').before('<li id="btn-demoreview"><a href="/guardian/demoReview.html">Contact Information</a></li>');
+
+});
+</script>
