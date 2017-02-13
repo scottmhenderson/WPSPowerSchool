@@ -1,0 +1,247 @@
+<!-- Used misc.html, Other Information student screen, as prototype -->
+
+<!DOCTYPE html>
+<html>
+<!-- start right frame -->
+<head>
+<!-- <title>~[text:psx.html.admin_students.misc.other_information]</title> -->
+title>Contact Info</title>
+~[wc:commonscripts]
+
+<script type="text/javascript">
+
+$j(document).ready(function() {
+
+	// Have two controls acting together. The text box on top is what goes to 
+	// the student record, and can type directly into it. Or choose from the
+	// drop-down which will populate to the text via change() function below.
+	//
+	// Put select behind the text so it looks like a combo box
+    $j('#selectP1Status').css('position', 'absolute');
+	$j('#p1status').css('position', 'absolute');
+    $j('#selectP1Status').css('z-index', 1);
+	$j('#p1status').css('z-index', 2);
+	// widen so can fit non-custodial parent
+	$j('#p1status').width(180);
+	$j('#selectP1Status').width(200);
+
+    $j('#selectP2Status').css('position', 'absolute');
+	$j('#p2status').css('position', 'absolute');
+    $j('#selectP2Status').css('z-index', 1);
+	$j('#p2status').css('z-index', 2);
+	$j('#p2status').width(180);
+	$j('#selectP2Status').width(200);
+
+	//$("#selectP1status").val('choose');	
+	
+	// set legal status from the drop-down
+	// select() vs. change() else if choose the first item, don't get called
+    $j('#selectP1Status').change( function() {
+		$j('#p1status').val( $j('#selectP1Status option:selected').text() );
+    });
+    $j('#selectP2Status').change( function() {
+		$j('#p2status').val( $j('#selectP2Status option:selected').text() );
+    });
+
+});
+
+</script>
+
+<link href="/images/css/screen.css" rel="stylesheet" media="screen">
+<link href="/images/css/print.css" rel="stylesheet" media="print">
+
+</head>
+
+<body>
+
+<form action="/admin/changesrecorded.white.html" method="POST">
+~[wc:admin_header_frame_css]<!-- breadcrumb start --><a href="/admin/home.html" target="_top">~[text:psx.html.admin_students.misc.start_page]</a> &gt; <a href="home.html?selectstudent=nosearch" target="_top">~[text:psx.html.admin_students.misc.student_selection]</a> &gt; ELL<!-- breadcrumb end -->~[wc:admin_navigation_frame_css]
+
+~[wc:title_student_begin_css]Contact Info~[wc:title_student_end_css]
+
+<!-- remove class=grid when done with the grid lines -->
+<div class="box-round">
+<table class="grid" border="0" cellspacing="0" cellpadding="4">
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">Student</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.generaldemographics.name]&nbsp;~[text:psx.html.admin_students.generaldemographics.last_first_mi]</td>
+<td>~([Students]lastfirst)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.generaldemographics.home_address]</td>
+<td>~([Students]street)<br>~([Students]city), ~([Students]state) ~([Students]zip)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.generaldemographics.home_phone]</td>
+<td>~([Students]home_phone)</td>
+</tr>
+
+<tr bgcolor="#f6f6f6">
+    <td colspan="2" class="bold">Parent 1</td>
+<tr>
+    <td class="bold">~[text:psx.html.admin_students.generaldemographics.name]&nbsp;(Last, First)</td>
+    <td>~([Students]mother)</td>
+</tr>
+<!--tr>
+    <td class="bold">Relationship</td>
+    <td>~([Students]Parent_1_relationship)&nbsp;&nbsp;(~([Students]Parent_1_legal_status))</td>
+	
+</tr-->
+<tr>
+    <td class="bold">Relationship & Legal Status</td>
+	<td>
+		<input type="text" name="[Students]Parent_1_relationship" id="p1rel" value="">
+		<input type="text" name="[Students]Parent_1_legal_status" id="p1status" value="">
+		<select name="" id="selectP1Status">
+			<option value="0" selected="">Custodial Parent</option>
+			<option value="1">Non-Custodial Parent</option>
+			<option value="2">Legal Guardian</option>
+			<option value="3" selected="selected">Other/Unknown/Unspecified</option>
+		</select>
+	</td>
+</tr>
+<tr>
+    <td class="bold">Day Phone</td>
+    <td>~([Students]motherdayphone)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.generaldemographics.home_phone]</td>
+<td>~([Students]mother_home_phone)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.generaldemographics.home_address]</td>
+<td>Guardian lives with student</td>
+</tr>
+
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">Parent 2</td>
+<tr>
+    <td class="bold">~[text:psx.html.admin_students.generaldemographics.name]&nbsp;(Last, First)</td>
+    <td>~([Students]father)</td>
+</tr>
+<!--tr>
+    <td class="bold">Relationship</td>
+    <td>~([Students]Parent_2_relationship)&nbsp;&nbsp;(~([Students]Parent_2_legal_status))</td>
+</tr-->
+<tr>
+    <td class="bold">Relationship & Legal Status</td>
+	<td><input type="text" name="[Students]Parent_2_relationship" id="p2rel" value="">
+		<input type="text" name="[Students]Parent_2_legal_status" id="p2status" value="">
+		<select name="" id="selectP2Status">
+			<option value="0" selected="">Custodial Parent</option>
+			<option value="1">Non-Custodial Parent</option>
+			<option value="2">Legal Guardian</option>
+			<!-- Setting this as default because won't get change() event 
+			     unless actually change the dropdown value, so would have 
+				 to chose away from then back to Custodial Parent to get 
+				 it. Still true with this one, but this one less common.
+			-->
+			<option value="3" selected="selected">Other/Unknown/Unspecified</option>
+		</select>
+	</td>
+</tr>
+
+<tr>
+<td class="bold">Day Phone</td>
+<td>~([Students]fatherdayphone)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.generaldemographics.home_phone]</td>
+<td>~([Students]father_home_phone)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.generaldemographics.home_address]</td>
+~[if.~([Students]mailing_zip)=""]
+<td>Guardian lives with student</td>
+[else]
+<td>
+	~([Students]mailing_street)<br>
+	~([Students]mailing_city), ~([Students]mailing_state)  ~([Students]mailing_zip)
+</td>
+</tr>
+[/if]
+~[if.1=0]
+<td class="bold">~[text:psx.html.admin_students.generaldemographics.fathers_employer]</td>
+<td>~([Students]Father_Employer)</td>
+[/if]
+
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">All Parents</td>
+</tr>
+<tr>
+    <td class="bold">~[text:psx.html.admin_students.generaldemographics.guardian_email](s)</td>
+    <td>~([Students]guardianemail)</td>
+</tr>
+
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">Emergency Contacts</td>
+</tr>
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">~[text:psx.html.admin_students.emergency.contact_]</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.contact_name_last_first]</td>
+<td>~([Students]Emerg_Contact_1)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.relationship]</td>
+<td>~([Students]Emerg_1_Rel)</td>
+</tr>
+<tr>
+<td class="bold">~([Students]Emerg_1_Ptype)&nbsp;#</td>
+<td>~([Students]Emerg_Phone_1)</td>
+</tr>
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">~[text:psx.html.admin_students.emergency.contact_1]</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.contact_name_last_first]</td>
+<td>~([Students]Emerg_Contact_2)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.relationship]</td>
+<td>~([Students]Emerg_2_Rel)</td>
+</tr>
+<tr>
+<td class="bold">~([Students]Emerg_2_Ptype)&nbsp;#</td>
+<td>~([Students]Emerg_Phone_2)</td>
+</tr>
+<tr bgcolor="#f6f6f6">
+<td colspan="2" class="bold">~[text:psx.html.admin_students.emergency.contact_2]</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.contact_name_last_first]</td>
+<td>~([Students]Emerg_Contact_3)</td>
+</tr>
+<tr>
+<td class="bold">~[text:psx.html.admin_students.emergency.relationship]</td>
+<td>~([Students]Emerg_3_Rel)</td>
+</tr>
+<tr>
+<td class="bold">~([Students]Emerg_3_Ptype)&nbsp;#</td>
+<td>~([Students]Emerg_Phone_3)</td>
+</tr>
+
+<tr bgcolor="#edf3fe">
+</tr>
+<tr>
+</tr>
+<tr bgcolor="#edf3fe">
+</tr>
+
+</table>
+
+<br>
+
+<div class="button-row"><input type="hidden" name="ac" value="prim">~[submitbutton]</div>
+</div>
+<br>
+<!-- end of content of bounding box -->
+
+~[wc:admin_footer_frame_css]
+</form>
+
+</body>
+</html><!-- end right frame -->
