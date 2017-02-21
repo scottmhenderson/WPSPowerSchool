@@ -1,0 +1,41 @@
+<!-- Adds counselor selection to the Student ModifyInfo screen
+-->
+
+<script type="text/javascript" language="JavaScript">
+
+    $j(document).ready(function() {
+
+        $j('table').first().find('tr').first().before( $j('#studentCounselorRow') );
+
+        // update the zebra striping
+        $j('table').first().children('tbody').children('tr').not('.headerrow').filter(':even').attr('bgcolor','#edf3fe');
+        $j('table').first().children('tbody').children('tr').not('.headerrow').filter(':odd').attr('bgcolor','#ffffff');
+
+		$j('#studentCounselorSelect').val('~([Students.U_Students_Extension]CounselorUsersDCID)');
+		
+    });
+
+</script>
+
+<div class="hide">
+    <table>
+        <tr id="studentCounselorRow">
+        <td class="bold">Counselor</td>
+        <td>
+            <select name="[Students.U_Students_Extension]CounselorUsersDCID" id="studentCounselorSelect" class="psSpecialValidate">
+              <option value="" selected="">Select a counselor</option>
+            ~[tlist_sql;
+          	select u.dcid, u.lastfirst from users u
+                join schoolstaff ss on u.dcid=ss.users_dcid and ss.schoolid=u.homeschoolid
+                where u.title like '%ounselor'
+                and ss.status=1
+                and (~(curschoolid)=u.homeschoolid or ~(curschoolid)=0)
+				order by u.lastfirst
+             ;]
+              <option value="~(id)">~(lastfirst) (~(id))</option>
+		[/tlist_sql]
+            </select>
+        </td>
+        </tr>
+    </table>
+</div>

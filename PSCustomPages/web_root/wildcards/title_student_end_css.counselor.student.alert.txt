@@ -1,0 +1,11 @@
+<!-- Add student alert icon to display name of student's guidance counselor
+-->
+<a class='dialogM' title='~[tlist_sql;
+		select u.lastfirst from users u
+		where u.dcid=~([Students.U_Students_Extension]CounselorUsersDCID)
+     ;]
+	Counselor: ~(lastfirst;t)
+	[/tlist_sql]' 
+  href="/admin/counseloralert.html?frn=~(studentfrn)" style="visibility: visible;">
+  ~[if.~([Students.U_Students_Extension]CounselorUsersDCID)=][else]<img src="/images/alert_counselor.png" height="28" width="28" border="0">[/if]
+</a>
