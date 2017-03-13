@@ -1,0 +1,76 @@
+<ReportName>Students by Home Room</ReportName>
+<ReportTitle>Students by Home Room</ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>K123</ReportGroup>
+<ReportDescription></ReportDescription>
+<SQLQuery><textarea name="UF-0060051990">Select s.dcid, s.student_number, s.LastFirst student, 
+decode(s.schoolid,3210005,'AES',3210010,'FES',3210025,'HES','ERR') Sch,
+s.grade_level, sec.Room, t.lastfirst
+FROM Students s
+JOIN cc ON cc.StudentID = s.ID and cc.Course_Number like 'ESHR%'
+  and cc.termid &gt;= ~(curtermid)
+JOIN Sections sec on cc.SectionID = sec.ID
+JOIN Teachers t on sec.teacher=t.id
+WHERE
+  ((~(curschoolid)=0 and s.schoolid &lt;= 3210025 and s.schoolid &gt;= 3210005)
+  OR
+  (~(curschoolid)=s.schoolid and ~(curschoolid)&lt;&gt;0))
+  and s.enroll_status=0 and s.state_excludefromreporting &lt;&gt; 1
+ORDER BY s.grade_level, sec.Room, s.lastfirst</textarea></SQLQuery>
+<ReportHeader> <th class="DCID">Student DCID</th><th>StuNo</th><th>Student</th><th>Sch</th><th>Grade_Level</th><th>Room</th><th>Teacher</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB>1</CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox>1</ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt>1</UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<FLSMapField></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<ExecGrp></ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>
