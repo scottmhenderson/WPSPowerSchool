@@ -1,0 +1,5 @@
+<script type="text/javascript">
+$j(document).ready(function(){
+    $j('div#content > div#content-main > form > h1').append( '<a class="dialogM" title="Find Me" href="/teachers/findmealert.html?frn=~(studentfrn)"><img src="/images/alert_findme.gif" height="28" width="34" border="0"></a>' );
+});
+</script>

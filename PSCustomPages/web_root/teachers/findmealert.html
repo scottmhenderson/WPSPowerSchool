@@ -1,0 +1,178 @@
+
+<div style="width: 640px; hidth: 640px;">
+<style>
+td.photocell img {
+    display: block;
+    max-width:230px;
+    max-height:230px;
+    width: auto;
+    height: auto;
+}
+</style>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="42" class="photocell">~(studentphoto)</td>
+<td width="5"><img src="/images/misc_trans.gif" width="5" height="1"></td>
+<td width="100%"><span class="header">Find Me</span><br>Name:&nbsp;~(studentname)<br>Home Room:&nbsp;~(home_room)</td>
+</tr>
+<tr>
+<td colspan="3" background="/images/bullet_repeat.gif"><img src="/images/transparent.gif" width="4" height="8" alt="" border="0"></td>
+</tr>
+<tr>
+<td colspan="3"><img src="/images/misc_trans.gif" width="1" height="8"></td>
+</tr>
+<tr>
+<td colspan="3">
+    ~[tlist_sql;
+SELECT p.Name Period,
+  bsi.Start_Time,
+  bsi.End_Time,
+  cdy.Day_Name, t.LastFirst Teacher,c.course_name, sec.Room, att.Att_Code, att.Description
+FROM Students s
+  INNER JOIN Calendar_Day cd ON cd.date_value=trunc(to_date('~[date]','MM/DD/YYYY'))
+    AND cd.SchoolID=(SELECT enrollment_schoolid FROM Students WHERE ID = ~(curstudid))
+  INNER JOIN Bell_Schedule bs ON cd.Bell_Schedule_ID=bs.ID
+  INNER JOIN Bell_Schedule_Items bsi ON bs.ID=bsi.Bell_Schedule_ID
+  INNER JOIN Cycle_Day cdy ON cdy.ID=Cycle_Day_ID
+  INNER JOIN Period p ON p.ID=bsi.Period_ID
+  INNER JOIN CC ON s.ID = cc.StudentID
+    AND cc.DateEnrolled <= trunc(to_date('~[date]','MM/DD/YYYY'))
+    AND cc.DateLeft > trunc(to_date('~[date]','MM/DD/YYYY'))
+  INNER JOIN Sections sec ON sec.ID=cc.SectionID
+  INNER JOIN Courses c ON sec.course_number=c.course_number
+  INNER JOIN Teachers t ON t.ID = sec.Teacher
+  INNER JOIN section_Meeting sm ON sm.Period_Number = p.Period_Number
+    AND sm.Cycle_Day_Letter = cdy.Letter
+    AND sm.Year_ID = ~(curyearid)
+    AND sm.SchoolID = (SELECT enrollment_schoolid FROM Students WHERE ID = ~(curstudid))
+    AND sm.SectionID = cc.SectionID
+  LEFT OUTER JOIN (SELECT Calendar_DayID, PeriodID, attc.Att_Code, attc.Description FROM Attendance att INNER JOIN Attendance_Code attc ON attc.ID=att.Attendance_CodeID WHERE att.SchoolID = (SELECT enrollment_schoolid FROM Students WHERE ID = ~(curstudid)) AND att.Att_Date = trunc(to_date('~[date]','MM/DD/YYYY')) AND StudentID = ~(curstudid)) att 
+    ON att.Calendar_DayID=cd.ID
+    AND att.PeriodID=p.ID
+WHERE bsi.Start_Time<=((substr('~[current.time.no.colon]', 1,2))*3600) + ((substr('~[current.time.no.colon]', 3,2))*60)
+  AND bsi.End_Time>=((substr('~[current.time.no.colon]', 1,2))*3600) + ((substr('~[current.time.no.colon]', 3,2))*60)
+  AND s.ID = ~(curstudid)]
+    ~[text]psx.html.admin_mobile.findmeiui.period____,param:~(period_number;t),param:~(bsi.start_time;l;format=time),param:~(bsi.end_time;l;format=time)[/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.rotation_day,param:~(Day_Name;t)[/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.teacher,param:~(teacher;t)[/text]<br />
+    Course Name: ~(course_name)<br />
+    ~[text]psx.html.admin_mobile.findmeiui.room,param:~(room;t)[/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.current_time,param:~[time][/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.attendance__,param:~(Att_Code;t),param:~(Description;t)[/text]<br />
+    [/tlist_sql]
+	<br>
+    ~[tlist_sql;
+SELECT 
+  'Between periods ' || pc.periodName || ' and ' || nc.periodName Period,
+  pc.Day_Name, 
+  'Traveling from ' || sec.Room || ' to ' || sec2.Room Room
+  
+FROM (SELECT DISTINCT bsi.Start_Time, bsi.End_Time, p.ID periodID, p.Name periodName, cc.SectionID, CC.ID, cdy.Day_Name
+                    FROM Calendar_Day cd
+                      INNER JOIN Bell_Schedule bs ON cd.Bell_Schedule_ID=bs.ID
+                        AND cd.SchoolID=(SELECT enrollment_schoolid FROM Students WHERE ID = ~(curstudid))
+                        AND cd.date_value=trunc(to_date('~[date]','MM/DD/YYYY'))
+                      INNER JOIN Bell_Schedule_Items bsi ON bs.ID=bsi.Bell_Schedule_ID
+                      INNER JOIN Cycle_Day cdy ON cdy.ID=Cycle_Day_ID
+                      INNER JOIN Period p ON p.ID=bsi.Period_ID
+                      INNER JOIN CC ON cc.StudentID = ~(curstudid)
+                        AND cc.DateEnrolled <= cd.date_value
+                        AND cc.DateLeft > cd.date_value
+                      INNER JOIN section_Meeting sm ON sm.Period_Number = p.Period_Number
+                        AND sm.Cycle_Day_Letter = cdy.Letter
+                        AND sm.Year_ID = ~(curyearid)
+                        AND sm.SchoolID = cd.SchoolID
+                        AND sm.SectionID = cc.SectionID) pc, Sections sec,
+  (SELECT DISTINCT bsi.Start_Time, bsi.End_Time, p.ID periodID, p.Name periodName, cc.SectionID, CC.ID, cdy.Letter
+                    FROM Calendar_Day cd
+                      INNER JOIN Bell_Schedule bs ON cd.Bell_Schedule_ID=bs.ID
+                        AND cd.SchoolID=(SELECT enrollment_schoolid FROM Students WHERE ID = ~(curstudid))
+                        AND cd.date_value=trunc(to_date('~[date]','MM/DD/YYYY'))
+                      INNER JOIN Bell_Schedule_Items bsi ON bs.ID=bsi.Bell_Schedule_ID
+                      INNER JOIN Cycle_Day cdy ON cdy.ID=Cycle_Day_ID
+                      INNER JOIN Period p ON p.ID=bsi.Period_ID
+                      INNER JOIN CC ON cc.StudentID = ~(curstudid)
+                        AND cc.DateEnrolled <= cd.date_value
+                        AND cc.DateLeft > cd.date_value
+                      INNER JOIN section_Meeting sm ON sm.Period_Number = p.Period_Number
+                        AND sm.Cycle_Day_Letter = cdy.Letter
+                        AND sm.Year_ID = ~(curyearid)
+                        AND sm.SchoolID = cd.SchoolID
+                        AND sm.SectionID = cc.SectionID) nc, Sections sec2 
+WHERE pc.SectionID = sec.ID
+  AND nc.SectionID = sec2.ID
+  AND pc.Start_Time = (SELECT MAX(START_TIME) FROM (SELECT DISTINCT bsi.Start_Time, bsi.End_Time
+                    FROM Calendar_Day cd
+                      INNER JOIN Bell_Schedule bs ON cd.Bell_Schedule_ID=bs.ID
+                        AND cd.SchoolID=(SELECT enrollment_schoolid FROM Students WHERE ID = ~(curstudid))
+                        AND cd.date_value=trunc(to_date('~[date]','MM/DD/YYYY'))
+                      INNER JOIN Bell_Schedule_Items bsi ON bs.ID=bsi.Bell_Schedule_ID
+                      INNER JOIN Cycle_Day cdy ON cdy.ID=Cycle_Day_ID
+                      INNER JOIN Period p ON p.ID=bsi.Period_ID
+                      INNER JOIN CC ON cc.StudentID = ~(curstudid)
+                        AND cc.DateEnrolled <= cd.date_value
+                        AND cc.DateLeft > cd.date_value
+                      INNER JOIN section_Meeting sm ON sm.Period_Number = p.Period_Number
+                        AND sm.Cycle_Day_Letter = cdy.Letter
+                        AND sm.Year_ID = ~(curyearid)
+                        AND sm.SchoolID = cd.SchoolID
+                        AND sm.SectionID = cc.SectionID) WHERE Start_Time < ((substr('~[current.time.no.colon]', 1,2))*3600) + ((substr('~[current.time.no.colon]', 3,2))*60))
+  AND nc.Start_Time = (SELECT MIN(START_TIME) FROM (SELECT DISTINCT bsi.Start_Time, bsi.End_Time
+                    FROM Calendar_Day cd
+                      INNER JOIN Bell_Schedule bs ON cd.Bell_Schedule_ID=bs.ID
+                        AND cd.SchoolID=(SELECT enrollment_schoolid FROM Students WHERE ID = ~(curstudid))
+                        AND cd.date_value=trunc(to_date('~[date]','MM/DD/YYYY'))
+                      INNER JOIN Bell_Schedule_Items bsi ON bs.ID=bsi.Bell_Schedule_ID
+                      INNER JOIN Cycle_Day cdy ON cdy.ID=Cycle_Day_ID
+                      INNER JOIN Period p ON p.ID=bsi.Period_ID
+                      INNER JOIN CC ON cc.StudentID = ~(curstudid)
+                        AND cc.DateEnrolled <= cd.date_value
+                        AND cc.DateLeft > cd.date_value
+                      INNER JOIN section_Meeting sm ON sm.Period_Number = p.Period_Number
+                        AND sm.Cycle_Day_Letter = cdy.Letter
+                        AND sm.Year_ID = ~(curyearid)
+                        AND sm.SchoolID = cd.SchoolID
+                        AND sm.SectionID = cc.SectionID) WHERE End_Time > ((substr('~[current.time.no.colon]', 1,2))*3600) + ((substr('~[current.time.no.colon]', 3,2))*60))
+AND pc.start_time != nc.start_time]
+	~[text]psx.html.admin_mobile.findmeiui.period,param:~(message;t)[/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.rotation_day1,param:~(Day_Name;t)[/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.room1,param:~(rooms;t)[/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.current_time1,param:~[time][/text]<br />
+    [/tlist_sql]
+	
+    ~[tlist_sql;
+SELECT 
+  CASE 
+    WHEN NOT((SELECT enroll_status FROM Students WHERE ID = ~(curstudid)) = 0) THEN 'This student is not active and doesn''t have a schedule'
+    WHEN SE.schoolStart >((substr('~[current.time.no.colon]', 1,2))*3600) + ((substr('~[current.time.no.colon]', 3,2))*60) THEN 'School has not started yet' 
+    WHEN SE.schoolEnd < ((substr('~[current.time.no.colon]', 1,2))*3600) + ((substr('~[current.time.no.colon]', 3,2))*60) THEN 'The school day has ended for this student'
+    WHEN SE.schoolStart is null THEN 'School is not in session today'
+  END message,
+  cdy.day_name, 
+  s.First_Name,
+  SE.schoolStart,
+  SE.schoolEnd
+FROM Students s 
+  INNER JOIN Calendar_Day cd ON s.Enrollment_SchoolID = cd.SchoolID
+    AND s.ID = ~(curstudid)
+  LEFT OUTER JOIN Cycle_Day cdy ON Cycle_Day_ID=cdy.ID,
+  (SELECT MIN(bsi.Start_Time) schoolStart, MAX(bsi.End_Time) schoolEnd
+		FROM Bell_Schedule_Items bsi 
+		  INNER JOIN Bell_Schedule bs ON bs.ID=bsi.Bell_Schedule_ID 
+		  INNER JOIN Calendar_Day cd ON cd.Bell_Schedule_ID=bs.ID AND cd.date_value=trunc(to_date('~[date]','MM/DD/YYYY')) AND cd.SchoolID=(SELECT enrollment_schoolid FROM Students WHERE ID = ~(curstudid))
+		  INNER JOIN Cycle_Day cdy ON cdy.ID=cd.Cycle_Day_ID
+		  INNER JOIN Period p ON p.ID=bsi.Period_ID
+		  INNER JOIN CC ON cc.StudentID = ~(curstudid) AND cc.DateEnrolled <= cd.date_value AND cc.DateLeft > cd.date_value
+		  INNER JOIN section_Meeting sm ON sm.Period_Number = p.Period_Number AND sm.Cycle_Day_Letter = cdy.Letter AND sm.Year_ID = ~(curyearid) AND sm.SchoolID = cd.SchoolID AND sm.sectionID = cc.sectionID) SE
+WHERE cd.date_value=trunc(to_date('~[date]','MM/DD/YYYY'))
+  AND NOT(SE.schoolEnd >= ((substr('~[current.time.no.colon]', 1,2))*3600) + ((substr('~[current.time.no.colon]', 3,2))*60) AND SE.schoolStart <= ((substr('~[current.time.no.colon]', 1,2))*3600) + ((substr('~[current.time.no.colon]', 3,2))*60))]
+    ~[text]psx.html.admin_mobile.findmeiui.period1,param:~(message;t)[/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.rotation_day2,param:~(day_name;t)[/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.current_time2,param:~[time][/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.first_class_for__begins_at,param:~(fn;t),param:~(SE.schoolStart;l;format=time)[/text]<br />
+    ~[text]psx.html.admin_mobile.findmeiui.last_class_for__ends_at,param:~(fn;t),param:~(SE.schoolEnd;l;format=time)[/text]<br />
+    [/tlist_sql]
+<br>&nbsp;<br></td>
+</tr>
+</table>
+</div>
