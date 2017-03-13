@@ -3,13 +3,14 @@
 <AfterTitle></AfterTitle>
 <ReportGroup>MPS</ReportGroup>
 <ReportDescription></ReportDescription>
-<SQLQuery><textarea name="UF-0060051584">Select s.DCID, s.Student_Number, s.LastFirst student, sec.Room, t.last_name
+<SQLQuery><textarea name="UF-0060051584">Select s.DCID, s.Student_Number, s.LastFirst student, s.grade_level, sec.Room, t.last_name
 FROM Students s
 JOIN cc ON cc.StudentID = s.ID and cc.Course_Number like 'MPHR%'
 JOIN Sections sec on cc.SectionID = sec.ID
+and cc.termid &gt;= ~(curtermid)
 Join teachers t on sec.teacher=t.id
 ORDER BY sec.Room, s.LastFirst</textarea></SQLQuery>
-<ReportHeader><th class="DCID">Student DCID</th><th>Student Num</th><th>Name</th><th>HR Num</th><th>Teacher</th></ReportHeader>
+<ReportHeader><th class="DCID">Student DCID</th><th>Student Num</th><th>Name</th><th>Grade</th><th>HR Num</th><th>Teacher</th></ReportHeader>
 <CreateStudentSelection>0</CreateStudentSelection>
 <StudentSelectionQuery></StudentSelectionQuery>
 <CreateStudentSelectionB>1</CreateStudentSelectionB>
@@ -64,3 +65,5 @@ ORDER BY sec.Room, s.LastFirst</textarea></SQLQuery>
 <ValueLi3>0</ValueLi3>
 <NoHeaderRow></NoHeaderRow>
 <ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>
